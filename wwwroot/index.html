@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- 自定义样式 -->
     <link href="css/style.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 </head>
 <body>
     <div id="app" class="container-fluid">
@@ -22,10 +24,13 @@
         <div class="row mt-3">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header bg-secondary text-white">
+                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">数据库连接配置</h5>
+                        <button class="btn btn-sm btn-light" @click="toggleConnectionPanel" :title="isConnectionPanelExpanded ? '收起配置' : '展开配置'">
+                            <i class="bi" :class="isConnectionPanelExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                        </button>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" :class="{ 'collapse': !isConnectionPanelExpanded }">
                         <div class="row">
                             <!-- 数据库A连接 -->
                             <div class="col-md-6">
@@ -59,10 +64,13 @@
         <div class="row mt-3" v-if="showComparisonScope">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header bg-info text-white">
+                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">比较范围</h5>
+                        <button class="btn btn-sm btn-light" @click="toggleScopePanel" :title="isScopePanelExpanded ? '收起配置' : '展开配置'">
+                            <i class="bi" :class="isScopePanelExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                        </button>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" :class="{ 'collapse': !isScopePanelExpanded }">
                         <comparison-scope-selector v-model="comparisonScope"></comparison-scope-selector>
                     </div>
                 </div>

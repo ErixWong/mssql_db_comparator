@@ -109,51 +109,152 @@ const DatabaseConnectionForm = {
     },
     template: `
         <div class="connection-form">
-            <div class="mb-3">
-                <label class="form-label">主机</label>
-                <input type="text" class="form-control" v-model="host" placeholder="服务器地址">
+            <!-- 连接信息组 -->
+            <div class="form-group mb-4">
+                <h6 class="text-primary mb-3"><i class="bi bi-server me-2"></i>连接信息</h6>
+                
+                <div class="row mb-3">
+                    <label class="col-12 col-md-3 col-form-label">主机 / 数据库</label>
+                    <div class="col-12 col-md-9">
+                        <div class="row g-2">
+                            <div class="col-12 col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-hdd-network"></i></span>
+                                    <input type="text" class="form-control" v-model="host" placeholder="服务器地址">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-database"></i></span>
+                                    <input type="text" class="form-control" v-model="database" placeholder="数据库名称">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <label class="col-12 col-md-3 col-form-label">端口 / 超时</label>
+                    <div class="col-12 col-md-9">
+                        <div class="row g-2">
+                            <div class="col-6 col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-ethernet"></i></span>
+                                    <input type="number" class="form-control" v-model="port" placeholder="1433">
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                    <input type="number" class="form-control" v-model="timeout" placeholder="60(秒)" min="30">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">用户名</label>
-                <input type="text" class="form-control" v-model="username" placeholder="数据库用户名">
+            
+            <!-- 认证信息组 -->
+            <div class="form-group mb-4">
+                <h6 class="text-success mb-3"><i class="bi bi-shield-lock me-2"></i>认证信息</h6>
+                
+                <div class="row mb-3">
+                    <label class="col-12 col-md-3 col-form-label">用户名 / 密码</label>
+                    <div class="col-12 col-md-9">
+                        <div class="row g-2">
+                            <div class="col-12 col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control" v-model="username" placeholder="用户名">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                    <input :type="showPassword ? 'text' : 'password'" class="form-control" v-model="password" placeholder="密码">
+                                    <button class="btn btn-outline-secondary" type="button" @click="showPassword = !showPassword">
+                                        <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">密码</label>
-                <input type="password" class="form-control" v-model="password" placeholder="数据库密码">
+            
+            <!-- 高级选项组 -->
+            <div class="form-group mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-warning mb-0"><i class="bi bi-gear me-2"></i>高级选项</h6>
+                    <button class="btn btn-sm btn-outline-secondary" @click="showAdvanced = !showAdvanced">
+                        <i :class="showAdvanced ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                        {{ showAdvanced ? '收起' : '展开' }}
+                    </button>
+                </div>
+                
+                <div v-if="showAdvanced" class="row">
+                    <div class="col-12">
+                        <div class="row mb-3">
+                            <label class="col-12 col-md-3 col-form-label">实例名称</label>
+                            <div class="col-12 col-md-9">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-collection"></i></span>
+                                    <input type="text" class="form-control" v-model="instanceName" placeholder="SQL Server实例名称(可选)">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-12 offset-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" v-model="encrypt" :id="'encryptCheck' + side">
+                                    <label class="form-check-label" :for="'encryptCheck' + side">
+                                        <i class="bi bi-lock-fill me-1"></i>加密连接
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">数据库名称</label>
-                <input type="text" class="form-control" v-model="database" placeholder="数据库名称">
-            </div>
+            
+            <!-- 操作按钮 -->
             <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">端口号</label>
-                    <input type="number" class="form-control" v-model="port" placeholder="1433">
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">连接超时(秒)</label>
-                    <input type="number" class="form-control" v-model="timeout" placeholder="60" min="30">
+                <div class="col-12 text-center">
+                    <button class="btn btn-primary" @click="testConnection" :disabled="isTesting || !isValid">
+                        <span v-if="isTesting" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <i class="bi bi-wifi me-1"></i>测试连接
+                    </button>
                 </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">实例名称</label>
-                <input type="text" class="form-control" v-model="instanceName" placeholder="SQL Server实例名称(可选)">
-            </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" v-model="encrypt" :id="'encryptCheck' + side">
-                <label class="form-check-label" :for="'encryptCheck' + side">加密连接</label>
-            </div>
-            <div class="mb-3">
-                <button class="btn btn-outline-primary" @click="testConnection" :disabled="isTesting || !isValid">
-                    <span v-if="isTesting" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    测试连接
-                </button>
-            </div>
-            <div v-if="testResult" class="alert" :class="testResult.success ? 'alert-success' : 'alert-danger'">
-                {{ testResult.message }}
+            
+            <!-- 测试结果 -->
+            <div v-if="testResult" class="row mt-3">
+                <div class="col-12">
+                    <div class="alert" :class="testResult.success ? 'alert-success' : 'alert-danger'">
+                        <i :class="testResult.success ? 'bi bi-check-circle me-1' : 'bi bi-exclamation-triangle me-1'"></i>
+                        {{ testResult.message }}
+                    </div>
+                </div>
             </div>
         </div>
-    `
+    `,
+    data() {
+        return {
+            host: '',
+            username: '',
+            password: '',
+            database: '',
+            port: 1433,
+            instanceName: '',
+            encrypt: false,
+            timeout: 60, // 默认超时时间设置为60秒
+            testResult: null,
+            isTesting: false,
+            showPassword: false,
+            showAdvanced: false
+        };
+    }
 };
 
 // 比较范围选择器组件
@@ -967,6 +1068,8 @@ const app = createApp({
             connectionsValid: false,
             isTesting: false,
             isComparing: false,
+            isConnectionPanelExpanded: true, // 控制数据库连接配置区域的展开/收起状态
+            isScopePanelExpanded: false,    // 控制比较范围选择区域的展开/收起状态，默认折叠
             showComparisonScope: true,
             showComparisonResult: false,
             comparisonScope: {
@@ -1125,6 +1228,14 @@ const app = createApp({
         showSuccess(message) {
             this.successMessage = message;
             this.successToast.show();
+        },
+        
+        toggleConnectionPanel() {
+            this.isConnectionPanelExpanded = !this.isConnectionPanelExpanded;
+        },
+        
+        toggleScopePanel() {
+            this.isScopePanelExpanded = !this.isScopePanelExpanded;
         }
     }
 });
