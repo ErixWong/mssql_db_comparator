@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MSSQL 数据库比较工具</title>
+    <title>MSSQL Database Comparison Tool</title>
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- 自定义样式 -->
@@ -16,7 +16,19 @@
         <!-- 顶部导航栏 -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">MSSQL 数据库比较工具</a>
+                <a class="navbar-brand" href="#">MSSQL Database Comparison Tool</a>
+                <div class="ms-auto d-flex align-items-center">
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-globe me-1"></i>
+                            <span id="currentLanguage">English</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                            <li><a class="dropdown-item" href="#" data-lang="en">English</a></li>
+                            <li><a class="dropdown-item" href="#" data-lang="zh">中文</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </nav>
 
@@ -25,8 +37,8 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">数据库连接配置</h5>
-                        <button class="btn btn-sm btn-light" @click="toggleConnectionPanel" :title="isConnectionPanelExpanded ? '收起配置' : '展开配置'">
+                        <h5 class="mb-0">{{ t('connectionConfig') }}</h5>
+                        <button class="btn btn-sm btn-light" @click="toggleConnectionPanel" :title="t(isConnectionPanelExpanded ? 'collapseConfig' : 'expandConfig')">
                             <i class="bi" :class="isConnectionPanelExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
                         </button>
                     </div>
@@ -34,12 +46,12 @@
                         <div class="row">
                             <!-- 数据库A连接 -->
                             <div class="col-md-6">
-                                <h6 class="border-bottom pb-2">数据库 A</h6>
+                                <h6 class="border-bottom pb-2">{{ t('databaseA') }}</h6>
                                 <database-connection-form side="A" @connection-change="onConnectionChange"></database-connection-form>
                             </div>
                             <!-- 数据库B连接 -->
                             <div class="col-md-6">
-                                <h6 class="border-bottom pb-2">数据库 B</h6>
+                                <h6 class="border-bottom pb-2">{{ t('databaseB') }}</h6>
                                 <database-connection-form side="B" @connection-change="onConnectionChange"></database-connection-form>
                             </div>
                         </div>
@@ -47,11 +59,11 @@
                             <div class="col-12 text-center">
                                 <button class="btn btn-primary" @click="testConnections" :disabled="isTesting">
                                     <span v-if="isTesting" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                    测试连接
+                                    {{ t('testConnection') }}
                                 </button>
                                 <button class="btn btn-success ms-2" @click="compareDatabases" :disabled="isComparing || !connectionsValid">
                                     <span v-if="isComparing" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                    比较数据库
+                                    {{ t('compareDatabases') }}
                                 </button>
                             </div>
                         </div>
@@ -65,8 +77,8 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">比较范围</h5>
-                        <button class="btn btn-sm btn-light" @click="toggleScopePanel" :title="isScopePanelExpanded ? '收起配置' : '展开配置'">
+                        <h5 class="mb-0">{{ t('comparisonScope') }}</h5>
+                        <button class="btn btn-sm btn-light" @click="toggleScopePanel" :title="t(isScopePanelExpanded ? 'collapseConfig' : 'expandConfig')">
                             <i class="bi" :class="isScopePanelExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
                         </button>
                     </div>
@@ -82,7 +94,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">比较结果</h5>
+                        <h5 class="mb-0">{{ t('comparisonResult') }}</h5>
                     </div>
                     <div class="card-body">
                         <database-comparison-result 
@@ -120,6 +132,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- 国际化脚本 -->
+    <script src="js/i18n.js"></script>
     <!-- 应用脚本 -->
     <script type="module" src="js/app.js"></script>
 </body>
