@@ -116,15 +116,16 @@ const DatabaseConnectionForm = {
                 </div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-4 col-form-label">用户名</label>
+                <label class="col-sm-4 col-form-label">用户名 / 密码</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" v-model="username" placeholder="数据库用户名">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-4 col-form-label">密码</label>
-                <div class="col-sm-8">
-                    <input type="password" class="form-control" v-model="password" placeholder="数据库密码">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <input type="text" class="form-control" v-model="username" placeholder="用户名">
+                        </div>
+                        <div class="col-6">
+                            <input type="password" class="form-control" v-model="password" placeholder="密码">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row mb-3">
@@ -134,15 +135,16 @@ const DatabaseConnectionForm = {
                 </div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-4 col-form-label">端口号</label>
+                <label class="col-sm-4 col-form-label">端口号 / 超时</label>
                 <div class="col-sm-8">
-                    <input type="number" class="form-control" v-model="port" placeholder="1433">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-4 col-form-label">连接超时(秒)</label>
-                <div class="col-sm-8">
-                    <input type="number" class="form-control" v-model="timeout" placeholder="60" min="30">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <input type="number" class="form-control" v-model="port" placeholder="1433">
+                        </div>
+                        <div class="col-6">
+                            <input type="number" class="form-control" v-model="timeout" placeholder="60(秒)" min="30">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row mb-3">
