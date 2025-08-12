@@ -1,0 +1,134 @@
+/* 全局样式 */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* 差异高亮样式 */
+.diff-only-in-a {
+    background-color: rgba(255, 182, 193, 0.5); /* 浅红色 */
+}
+
+.diff-only-in-b {
+    background-color: rgba(173, 216, 230, 0.5); /* 浅蓝色 */
+}
+
+.diff-different {
+    background-color: rgba(255, 255, 224, 0.5); /* 浅黄色 */
+}
+
+.diff-same {
+    background-color: rgba(144, 238, 144, 0.2); /* 浅绿色 */
+}
+
+/* 数据库连接表单样式 */
+.connection-form {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.connection-form .form-label {
+    font-weight: 500;
+}
+
+/* 比较结果样式 */
+.comparison-result {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+}
+
+.comparison-header {
+    font-weight: bold;
+    background-color: #e9ecef;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.table-comparison {
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+}
+
+.table-header {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: bold;
+}
+
+.table-content {
+    padding: 10px;
+}
+
+.column-comparison {
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+/* 展开折叠按钮 */
+.expand-collapse-btn {
+    cursor: pointer;
+    user-select: none;
+}
+
+.expand-collapse-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* 左右分栏样式 */
+.diff-layout {
+    display: flex;
+}
+
+.diff-column {
+    flex: 1;
+    padding: 10px;
+}
+
+.diff-column-left {
+    border-right: 1px solid #dee2e6;
+}
+
+/* 比较范围选择器样式 */
+.scope-group {
+    margin-bottom: 15px;
+}
+
+.scope-group-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+    padding: 5px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+}
+
+.scope-item {
+    margin-left: 20px;
+    margin-bottom: 3px;
+}
+
+/* 加载动画 */
+.loading-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 0.2em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border .75s linear infinite;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .diff-layout {
+        flex-direction: column;
+    }
+    
+    .diff-column-left {
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+    }
+}
