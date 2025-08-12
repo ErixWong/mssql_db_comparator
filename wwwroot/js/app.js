@@ -109,48 +109,70 @@ const DatabaseConnectionForm = {
     },
     template: `
         <div class="connection-form">
-            <div class="mb-3">
-                <label class="form-label">主机</label>
-                <input type="text" class="form-control" v-model="host" placeholder="服务器地址">
+            <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">主机</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" v-model="host" placeholder="服务器地址">
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">用户名</label>
-                <input type="text" class="form-control" v-model="username" placeholder="数据库用户名">
+            <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">用户名</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" v-model="username" placeholder="数据库用户名">
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">密码</label>
-                <input type="password" class="form-control" v-model="password" placeholder="数据库密码">
+            <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">密码</label>
+                <div class="col-sm-8">
+                    <input type="password" class="form-control" v-model="password" placeholder="数据库密码">
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">数据库名称</label>
-                <input type="text" class="form-control" v-model="database" placeholder="数据库名称">
+            <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">数据库名称</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" v-model="database" placeholder="数据库名称">
+                </div>
             </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">端口号</label>
+            <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">端口号</label>
+                <div class="col-sm-8">
                     <input type="number" class="form-control" v-model="port" placeholder="1433">
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">连接超时(秒)</label>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">连接超时(秒)</label>
+                <div class="col-sm-8">
                     <input type="number" class="form-control" v-model="timeout" placeholder="60" min="30">
                 </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">实例名称</label>
-                <input type="text" class="form-control" v-model="instanceName" placeholder="SQL Server实例名称(可选)">
+            <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">实例名称</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" v-model="instanceName" placeholder="SQL Server实例名称(可选)">
+                </div>
             </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" v-model="encrypt" :id="'encryptCheck' + side">
-                <label class="form-check-label" :for="'encryptCheck' + side">加密连接</label>
+            <div class="row mb-3">
+                <div class="col-sm-8 offset-sm-4">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" v-model="encrypt" :id="'encryptCheck' + side">
+                        <label class="form-check-label" :for="'encryptCheck' + side">加密连接</label>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <button class="btn btn-outline-primary" @click="testConnection" :disabled="isTesting || !isValid">
-                    <span v-if="isTesting" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    测试连接
-                </button>
+            <div class="row mb-3">
+                <div class="col-sm-8 offset-sm-4">
+                    <button class="btn btn-outline-primary" @click="testConnection" :disabled="isTesting || !isValid">
+                        <span v-if="isTesting" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        测试连接
+                    </button>
+                </div>
             </div>
-            <div v-if="testResult" class="alert" :class="testResult.success ? 'alert-success' : 'alert-danger'">
-                {{ testResult.message }}
+            <div v-if="testResult" class="row">
+                <div class="col-12">
+                    <div class="alert" :class="testResult.success ? 'alert-success' : 'alert-danger'">
+                        {{ testResult.message }}
+                    </div>
+                </div>
             </div>
         </div>
     `
@@ -967,6 +989,7 @@ const app = createApp({
             connectionsValid: false,
             isTesting: false,
             isComparing: false,
+            isConnectionPanelExpanded: true, // 控制数据库连接配置区域的展开/收起状态
             showComparisonScope: true,
             showComparisonResult: false,
             comparisonScope: {
@@ -1125,6 +1148,10 @@ const app = createApp({
         showSuccess(message) {
             this.successMessage = message;
             this.successToast.show();
+        },
+        
+        toggleConnectionPanel() {
+            this.isConnectionPanelExpanded = !this.isConnectionPanelExpanded;
         }
     }
 });

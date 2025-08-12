@@ -78,6 +78,30 @@ body {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
+/* 数据库连接配置区域展开/收起动画 */
+.card-body.collapse {
+    display: none;
+}
+
+.card-body.collapsing {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.35s ease;
+}
+
+.card-body.collapse.show {
+    display: block;
+}
+
+/* 连接配置区域按钮样式 */
+.connection-panel-toggle {
+    transition: transform 0.3s ease;
+}
+
+.connection-panel-toggle:hover {
+    transform: scale(1.1);
+}
+
 /* 左右分栏样式 */
 .diff-layout {
     display: flex;
