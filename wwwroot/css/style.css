@@ -23,12 +23,75 @@ body {
 
 /* 数据库连接表单样式 */
 .connection-form {
-    padding: 10px;
-    border-radius: 5px;
+    padding: 15px;
+    border-radius: 8px;
 }
 
 .connection-form .form-label {
     font-weight: 500;
+}
+
+/* 表单分组样式 */
+.form-group {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #dee2e6;
+}
+
+.form-group h6 {
+    font-weight: 600;
+}
+
+/* 连接信息组样式 */
+.form-group:nth-child(1) {
+    border-left-color: #0d6efd;
+}
+
+/* 认证信息组样式 */
+.form-group:nth-child(2) {
+    border-left-color: #198754;
+}
+
+/* 高级选项组样式 */
+.form-group:nth-child(3) {
+    border-left-color: #ffc107;
+}
+
+/* 输入组图标样式 */
+.input-group-text {
+    background-color: #e9ecef;
+    border-right: none;
+}
+
+.input-group .form-control {
+    border-left: none;
+}
+
+.input-group .form-control:focus {
+    border-color: #ced4da;
+    box-shadow: none;
+}
+
+.input-group .form-control:focus + .input-group-text {
+    border-color: #ced4da;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .connection-form {
+        padding: 10px;
+    }
+    
+    .form-group {
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .form-group h6 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
 }
 
 /* 比较结果样式 */

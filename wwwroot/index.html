@@ -64,10 +64,13 @@
         <div class="row mt-3" v-if="showComparisonScope">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header bg-info text-white">
+                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">比较范围</h5>
+                        <button class="btn btn-sm btn-light" @click="toggleScopePanel" :title="isScopePanelExpanded ? '收起配置' : '展开配置'">
+                            <i class="bi" :class="isScopePanelExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                        </button>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" :class="{ 'collapse': !isScopePanelExpanded }">
                         <comparison-scope-selector v-model="comparisonScope"></comparison-scope-selector>
                     </div>
                 </div>
