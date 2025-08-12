@@ -11,6 +11,8 @@ For two given database connections, list and compare their respective table stru
 ## Development Credits
 Most of the code in this project was developed by GLM-4.5 using the Kilo code development tool. Some of the more difficult debugging was completed by Claude Sonnet-3.7, and parts that AI could not solve were debugged manually. Thanks to z.ai for the one trillion token gift package!
 
+This project took 13 hours from design to release, with approximately 8 hours of actual work time.
+
 ## Directory Structure
 - **Frontend directory**: wwwroot
 - **Backend directory**: backend
@@ -71,6 +73,8 @@ All differences should be expanded by default, while identical items should be c
 
 ## 开发致谢
 本项目绝大多数代码由 GLM-4.5开发完成，使用Kilo code开发工具。部分难度较高的调试由claude sonnet-3.7完成，AI解决不了的部分由人工debug完成。感谢z.ai的一万亿token大礼包！
+
+该项目从设计到发布历时13小时，实际工时大约8小时。
 
 ## 目录结构
 - **前端目录**: wwwroot
