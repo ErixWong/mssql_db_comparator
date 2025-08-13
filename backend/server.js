@@ -101,6 +101,33 @@ router.post('/api/compare-databases', async (ctx) => {
   }
 });
 
+// 比较单个表路由
+router.post('/api/compare-single-table', async (ctx) => {
+  try {
+    const { dbAConfig, dbBConfig, schemaName, tableName, comparisonScope } = ctx.request.body;
+    
+    const comparator = new DatabaseComparator();
+    
+    // 初始化数据库连接
+    await comparator.initialize(dbAConfig, dbBConfig);
+    
+    // 执行单个表比较
+    const comparisonResult = await comparator.compareSingleTable(schemaName, tableName, comparisonScope);
+    
+    // 断开连接
+    await comparator.disconnect();
+    
+    ctx.body = {
+      success: true,
+      message: `Table ${schemaName}.${tableName} comparison completed successfully`,
+      comparisonResult
+    };
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { success: false, message: error.message };
+  }
+});
+
 // 使用路由
 app.use(router.routes());
 app.use(router.allowedMethods());

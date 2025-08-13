@@ -52,7 +52,7 @@ export class DatabaseComparator {
       let storedProceduresComparison = null;
       if (comparisonScope.storedProcedures || comparisonScope.all) {
         storedProceduresComparison = this.compareStoredProcedures(
-          dbAStructure.storedProcedures || [], 
+          dbAStructure.storedProcedures || [],
           dbBStructure.storedProcedures || []
         );
       }
@@ -64,6 +64,24 @@ export class DatabaseComparator {
       };
     } catch (error) {
       throw new Error(`Failed to compare databases: ${error.message}`);
+    }
+  }
+
+  // 比较单个表
+  async compareSingleTable(schemaName, tableName, comparisonScope) {
+    try {
+      // 获取两个数据库中指定表的结构
+      const tableAStructure = await this.dbA.getTableStructure(schemaName, tableName, comparisonScope);
+      const tableBStructure = await this.dbB.getTableStructure(schemaName, tableName, comparisonScope);
+      
+      // 比较表结构
+      const tableComparison = this.compareTable(tableAStructure, tableBStructure, comparisonScope);
+      
+      return {
+        table: tableComparison
+      };
+    } catch (error) {
+      throw new Error(`Failed to compare table ${schemaName}.${tableName}: ${error.message}`);
     }
   }
 
@@ -302,8 +320,8 @@ export class DatabaseComparator {
     const allKeys = new Set([...Object.keys(objA), ...Object.keys(objB)]);
     
     for (const key of allKeys) {
-      // 跳过状态字段
-      if (key === 'status' || key === 'hasDifferences' || key === 'differences' || key === 'similarities' || key === 'detailsA' || key === 'detailsB') {
+      // 跳过状态字段和column_id（因为列顺序不同可能导致column_id不一致）
+      if (key === 'status' || key === 'hasDifferences' || key === 'differences' || key === 'similarities' || key === 'detailsA' || key === 'detailsB' || key === 'column_id') {
         continue;
       }
       

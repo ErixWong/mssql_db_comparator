@@ -412,4 +412,79 @@ export class DatabaseConnection {
       throw new Error(`Failed to get full database structure: ${error.message}`);
     }
   }
+
+  // 获取单个表的结构
+  async getTableStructure(schemaName, tableName, comparisonScope) {
+    try {
+      const tableStructure = {
+        schemaName: schemaName,
+        tableName: tableName,
+        columns: [],
+        primaryKeys: [],
+        foreignKeys: [],
+        indexes: [],
+        constraints: [],
+        triggers: []
+      };
+
+      if (comparisonScope.fields || comparisonScope.all) {
+        try {
+          tableStructure.columns = await this.getColumns(schemaName, tableName);
+        } catch (error) {
+          console.error(`获取表 ${schemaName}.${tableName} 的列信息失败: ${error.message}`);
+          tableStructure.columns = [];
+        }
+      }
+
+      if (comparisonScope.primaryKeys || comparisonScope.all) {
+        try {
+          tableStructure.primaryKeys = await this.getPrimaryKeys(schemaName, tableName);
+        } catch (error) {
+          console.error(`获取表 ${schemaName}.${tableName} 的主键信息失败: ${error.message}`);
+          tableStructure.primaryKeys = [];
+        }
+      }
+
+      if (comparisonScope.foreignKeys || comparisonScope.all) {
+        try {
+          tableStructure.foreignKeys = await this.getForeignKeys(schemaName, tableName);
+        } catch (error) {
+          console.error(`获取表 ${schemaName}.${tableName} 的外键信息失败: ${error.message}`);
+          tableStructure.foreignKeys = [];
+        }
+      }
+
+      if (comparisonScope.indexes || comparisonScope.all) {
+        try {
+          tableStructure.indexes = await this.getIndexes(schemaName, tableName);
+        } catch (error) {
+          console.error(`获取表 ${schemaName}.${tableName} 的索引信息失败: ${error.message}`);
+          tableStructure.indexes = [];
+        }
+      }
+
+      if (comparisonScope.constraints || comparisonScope.all) {
+        try {
+          tableStructure.constraints = await this.getConstraints(schemaName, tableName);
+        } catch (error) {
+          console.error(`获取表 ${schemaName}.${tableName} 的约束信息失败: ${error.message}`);
+          tableStructure.constraints = [];
+        }
+      }
+
+      if (comparisonScope.triggers || comparisonScope.all) {
+        try {
+          tableStructure.triggers = await this.getTriggers(schemaName, tableName);
+        } catch (error) {
+          console.error(`获取表 ${schemaName}.${tableName} 的触发器信息失败: ${error.message}`);
+          tableStructure.triggers = [];
+        }
+      }
+
+      return tableStructure;
+    } catch (error) {
+      console.error(`获取表 ${schemaName}.${tableName} 结构失败: ${error.message}`);
+      throw new Error(`Failed to get table structure for ${schemaName}.${tableName}: ${error.message}`);
+    }
+  }
 }

@@ -38,6 +38,7 @@ const i18nResources = {
         // 按钮
         testConnection: "Test Connection",
         compareDatabases: "Compare Databases",
+        recompareTable: "Recompare",
         
         // 比较范围
         comparisonScope: "Comparison Scope",
@@ -72,6 +73,8 @@ const i18nResources = {
         connectionTestFailed: "Connection test failed",
         comparisonComplete: "Database comparison complete",
         comparisonFailed: "Database comparison failed",
+        tableComparisonComplete: "Table {table} comparison complete",
+        tableComparisonFailed: "Table comparison failed",
         incompleteConfig: "Incomplete database configuration",
         missingFields: "Missing fields",
         dbAMissingFields: "Database A is missing fields",
@@ -127,6 +130,7 @@ const i18nResources = {
         // 按钮
         testConnection: "测试连接",
         compareDatabases: "比较数据库",
+        recompareTable: "重新比较",
         
         // 比较范围
         comparisonScope: "比较范围",
@@ -161,6 +165,8 @@ const i18nResources = {
         connectionTestFailed: "连接测试失败",
         comparisonComplete: "数据库比较完成",
         comparisonFailed: "数据库比较失败",
+        tableComparisonComplete: "表 {table} 比较完成",
+        tableComparisonFailed: "表比较失败",
         incompleteConfig: "数据库配置不完整",
         missingFields: "缺少字段",
         dbAMissingFields: "数据库A缺少字段",

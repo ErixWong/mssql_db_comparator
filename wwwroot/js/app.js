@@ -594,10 +594,16 @@ const DatabaseComparisonResult = {
                 <div v-if="result.tables.inBoth && result.tables.inBoth.length > 0">
                     <h6>{{ $root.t('inBoth') }}</h6>
                     <div v-for="table in result.tables.inBoth" :key="getTableKey(table)" class="table-comparison mb-3">
-                        <div class="table-header" @click="toggleTable(getTableKey(table))" :class="['expand-collapse-btn', getDiffClass(table.hasDifferences ? 'different' : 'same')]">
-                            {{ table.schemaName }}.{{ table.tableName }}
-                            <span v-if="table.hasDifferences" class="badge bg-warning ms-2">{{ $root.t('hasDifferences') }}</span>
-                            <span class="float-end">{{ isTableExpanded(getTableKey(table)) ? '▼' : '▶' }}</span>
+                        <div class="table-header d-flex justify-content-between align-items-center" :class="['expand-collapse-btn', getDiffClass(table.hasDifferences ? 'different' : 'same')]">
+                            <div @click="toggleTable(getTableKey(table))" class="flex-grow-1">
+                                {{ table.schemaName }}.{{ table.tableName }}
+                                <span v-if="table.hasDifferences" class="badge bg-warning ms-2">{{ $root.t('hasDifferences') }}</span>
+                                <span class="float-end">{{ isTableExpanded(getTableKey(table)) ? '▼' : '▶' }}</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary ms-2" @click.stop="$root.compareSingleTable(table.schemaName, table.tableName)" :disabled="$root.isComparing">
+                                <span v-if="$root.isComparing" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                {{ $root.t('recompareTable') }}
+                            </button>
                         </div>
                         
                         <div v-if="isTableExpanded(getTableKey(table))" class="table-content">
@@ -1244,6 +1250,47 @@ const app = createApp({
                 }
             } catch (error) {
                 this.showError(`${this.$root.t('comparisonFailed')}: ${error.message}`);
+            } finally {
+                this.isComparing = false;
+            }
+        },
+
+        async compareSingleTable(schemaName, tableName) {
+            this.isComparing = true;
+            try {
+                const response = await fetch('/api/compare-single-table', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        dbAConfig: this.dbAConfig,
+                        dbBConfig: this.dbBConfig,
+                        schemaName: schemaName,
+                        tableName: tableName,
+                        comparisonScope: this.comparisonScope
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    // 更新比较结果中对应的表
+                    if (this.comparisonResult && this.comparisonResult.tables && this.comparisonResult.tables.inBoth) {
+                        const tableIndex = this.comparisonResult.tables.inBoth.findIndex(
+                            table => table.schemaName === schemaName && table.tableName === tableName
+                        );
+                        
+                        if (tableIndex !== -1) {
+                            // 更新表比较结果
+                            this.comparisonResult.tables.inBoth[tableIndex] = result.comparisonResult.table;
+                            this.showSuccess(this.$root.t('tableComparisonComplete').replace('{table}', `${schemaName}.${tableName}`));
+                        }
+                    }
+                } else {
+                    this.showError(`${this.$root.t('tableComparisonFailed')}: ${result.message}`);
+                }
+            } catch (error) {
+                this.showError(`${this.$root.t('tableComparisonFailed')}: ${error.message}`);
             } finally {
                 this.isComparing = false;
             }
