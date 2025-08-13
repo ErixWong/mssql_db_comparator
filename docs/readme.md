@@ -1,5 +1,16 @@
 # Database Comparison Tool
 
+## Interface Screenshots
+
+### Database Connection Interface
+![Database Connection Interface](screenshots/connection.png)
+
+### Comparison Scope Selection Interface
+![Comparison Scope Selection Interface](screenshots/scope.png)
+
+### Comparison Results Interface
+![Comparison Results Interface](screenshots/result.png)
+
 ## Technology Stack
 - **Frontend**: Bootstrap 5.3 + Vue 3
 - **Backend**: Node.js + Koa with ESM modules
@@ -121,14 +132,3 @@ All differences should be expanded by default, while identical items should be c
 
 ### 默认显示状态
 所有差异项应默认展开，而相同项应默认折叠。
-
-## 界面截图
-
-### 数据库连接界面
-![数据库连接界面](screenshots/connection.png)
-
-### 比较范围选择界面
-![比较范围选择界面](screenshots/scope.png)
-
-### 比较结果界面
-![比较结果界面](screenshots/result.png)
