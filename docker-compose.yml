@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "10298:10298"
+    volumes:
+      - ./wwwroot:/app/wwwroot
+      - ./backend:/app/backend
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - mssql-compare-network
+
+networks:
+  mssql-compare-network:
+    driver: bridge
