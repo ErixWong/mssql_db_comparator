@@ -11,6 +11,10 @@
 ### Comparison Results Interface
 ![Comparison Results Interface](screenshots/result.png)
 
+## Use Cases
+
+When your development and production database structures are inconsistent, or when there are significant version differences between legacy instances and current versions, don't you wish to quickly know what changes need to be made in the target database? This tool can help you rapidly identify these differences.
+
 ## Technology Stack
 - **Frontend**: Bootstrap 5.3 + Vue 3
 - **Backend**: Node.js + Koa with ESM modules
@@ -73,6 +77,10 @@ All differences should be expanded by default, while identical items should be c
 ---
 
 # 数据库比较工具
+
+## 使用场景
+
+当你的开发环境和生产环境数据库结构不一致的时候，当老版本实例和当前版本之间存在较大版本差异的时候，你是不是希望很快知道，需要在目标数据库做哪些变更？这个工具可以快速帮你识别出差异。
 
 ## 技术栈
 - **前端**: Bootstrap 5.3 + Vue 3
