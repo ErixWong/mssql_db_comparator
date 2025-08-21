@@ -597,7 +597,10 @@ const DatabaseComparisonResult = {
                         <div class="table-header d-flex justify-content-between align-items-center" :class="['expand-collapse-btn', getDiffClass(table.hasDifferences ? 'different' : 'same')]">
                             <div @click="toggleTable(getTableKey(table))" class="flex-grow-1">
                                 {{ table.schemaName }}.{{ table.tableName }}
-                                <span v-if="table.hasDifferences" class="badge bg-warning ms-2">{{ $root.t('hasDifferences') }}</span>
+                                <span v-if="table.fieldCountInfo && table.fieldCountInfo.difference !== 0" class="badge bg-info ms-2">
+                                    {{ $root.t('fieldCountDifference').replace('{countA}', table.fieldCountInfo.countA).replace('{countB}', table.fieldCountInfo.countB).replace('{difference}', table.fieldCountInfo.difference > 0 ? '+' + table.fieldCountInfo.difference : table.fieldCountInfo.difference) }}
+                                </span>
+                                <span v-if="table.hasDifferences && (!table.fieldCountInfo || table.fieldCountInfo.difference === 0)" class="badge bg-warning ms-2">{{ $root.t('hasDifferences') }}</span>
                                 <span class="float-end">{{ isTableExpanded(getTableKey(table)) ? '▼' : '▶' }}</span>
                             </div>
                             <button class="btn btn-sm btn-outline-primary ms-2" @click.stop="$root.compareSingleTable(table.schemaName, table.tableName)" :disabled="$root.isComparing">

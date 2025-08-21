@@ -183,13 +183,33 @@ export class DatabaseComparator {
       foreignKeys: { onlyInA: [], onlyInB: [], inBoth: [] },
       indexes: { onlyInA: [], onlyInB: [], inBoth: [] },
       constraints: { onlyInA: [], onlyInB: [], inBoth: [] },
-      triggers: { onlyInA: [], onlyInB: [], inBoth: [] }
+      triggers: { onlyInA: [], onlyInB: [], inBoth: [] },
+      fieldCountInfo: {
+        countA: 0,
+        countB: 0,
+        difference: 0
+      }
     };
     
     // 比较列
     if (comparisonScope.fields || comparisonScope.all) {
       const columnsComparison = this.compareTableObjects(tableA.columns, tableB.columns, 'column_name');
       result.columns = columnsComparison;
+      
+      // 计算字段数量差异
+      const countA = (tableA.columns || []).length;
+      const countB = (tableB.columns || []).length;
+      result.fieldCountInfo = {
+        countA,
+        countB,
+        difference: countA - countB
+      };
+      
+      // 如果字段数量有差异，标记表有差异
+      if (countA !== countB) {
+        result.hasDifferences = true;
+      }
+      
       if (columnsComparison.inBoth.some(col => col.hasDifferences)) {
         result.hasDifferences = true;
       }
