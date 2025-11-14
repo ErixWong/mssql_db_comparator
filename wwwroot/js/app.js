@@ -22,7 +22,9 @@ const DatabaseConnectionForm = {
             timeout: 60, // 默认超时时间设置为60秒
             testResult: null,
             isTesting: false,
-            languageKey: 0 // 用于强制重新渲染组件
+            languageKey: 0, // 用于强制重新渲染组件
+            showPassword: false,
+            showAdvanced: false
         };
     },
     mounted() {
@@ -90,55 +92,64 @@ const DatabaseConnectionForm = {
                 this.testResult = result;
                 
                 if (result.success) {
-                    this.showSuccess(this.$root.t('connectionTestSuccess'));
+                    this.showSuccess(this.t('connectionTestSuccess'));
                 } else {
-                    this.showError(`${this.$root.t('connectionTestFailed')}: ${result.message}`);
+                    this.showError(`${this.t('connectionTestFailed')}: ${result.message}`);
                 }
             } catch (error) {
                 console.error('连接测试错误:', error);
-                this.showError(`${this.$root.t('connectionTestFailed')}: ${error.message}`);
+                this.showError(`${this.t('connectionTestFailed')}: ${error.message}`);
                 this.testResult = { success: false, message: error.message };
             } finally {
                 this.isTesting = false;
             }
         },
         showError(message) {
-            if (this.$root && this.$root.showError) {
-                this.$root.showError(message);
-            } else {
-                console.error(message);
-                alert('错误: ' + message);
-            }
+            // 使用全局事件总线或直接调用父组件方法
+            this.$emit('show-error', message);
+            // 备用方案
+            console.error(message);
         },
         showSuccess(message) {
-            if (this.$root && this.$root.showSuccess) {
-                this.$root.showSuccess(message);
-            } else {
-                console.log(message);
-                alert('成功: ' + message);
+            // 使用全局事件总线或直接调用父组件方法
+            this.$emit('show-success', message);
+            // 备用方案
+            console.log(message);
+        },
+        // 添加翻译方法作为组件的本地方法
+        t(key) {
+            // 优先使用父组件的翻译方法
+            if (this.$parent && this.$parent.t) {
+                return this.$parent.t(key);
             }
+            // 备用方案：使用全局i18n
+            if (window.i18n) {
+                return window.i18n.t(key);
+            }
+            // 最后的备用方案：返回key
+            return key;
         }
     },
     template: `
         <div class="connection-form" :key="languageKey">
             <!-- 连接信息组 -->
             <div class="form-group mb-4">
-                <h6 class="text-primary mb-3"><i class="bi bi-server me-2"></i>{{ $root.t('connectionInfo') }}</h6>
+                <h6 class="text-primary mb-3"><i class="bi bi-server me-2"></i>{{ t('connectionInfo') }}</h6>
                 
                 <div class="row mb-3">
-                    <label class="col-12 col-md-3 col-form-label">{{ $root.t('hostDatabase') }}</label>
+                    <label class="col-12 col-md-3 col-form-label">{{ t('hostDatabase') }}</label>
                     <div class="col-12 col-md-9">
                         <div class="row g-2">
                             <div class="col-12 col-md-6">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-hdd-network"></i></span>
-                                    <input type="text" class="form-control" v-model="host" :placeholder="$root.t('serverAddress')">
+                                    <input type="text" class="form-control" v-model="host" :placeholder="t('serverAddress')">
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-database"></i></span>
-                                    <input type="text" class="form-control" v-model="database" :placeholder="$root.t('databaseName')">
+                                    <input type="text" class="form-control" v-model="database" :placeholder="t('databaseName')">
                                 </div>
                             </div>
                         </div>
@@ -146,19 +157,19 @@ const DatabaseConnectionForm = {
                 </div>
                 
                 <div class="row mb-3">
-                    <label class="col-12 col-md-3 col-form-label">{{ $root.t('portTimeout') }}</label>
+                    <label class="col-12 col-md-3 col-form-label">{{ t('portTimeout') }}</label>
                     <div class="col-12 col-md-9">
                         <div class="row g-2">
                             <div class="col-6 col-md-4">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-ethernet"></i></span>
-                                    <input type="number" class="form-control" v-model="port" :placeholder="$root.t('port')">
+                                    <input type="number" class="form-control" v-model="port" :placeholder="t('port')">
                                 </div>
                             </div>
                             <div class="col-6 col-md-4">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-clock"></i></span>
-                                    <input type="number" class="form-control" v-model="timeout" :placeholder="$root.t('timeout')" min="30">
+                                    <input type="number" class="form-control" v-model="timeout" :placeholder="t('timeout')" min="30">
                                 </div>
                             </div>
                         </div>
@@ -168,22 +179,22 @@ const DatabaseConnectionForm = {
             
             <!-- 认证信息组 -->
             <div class="form-group mb-4">
-                <h6 class="text-success mb-3"><i class="bi bi-shield-lock me-2"></i>{{ $root.t('authInfo') }}</h6>
+                <h6 class="text-success mb-3"><i class="bi bi-shield-lock me-2"></i>{{ t('authInfo') }}</h6>
                 
                 <div class="row mb-3">
-                    <label class="col-12 col-md-3 col-form-label">{{ $root.t('usernamePassword') }}</label>
+                    <label class="col-12 col-md-3 col-form-label">{{ t('usernamePassword') }}</label>
                     <div class="col-12 col-md-9">
                         <div class="row g-2">
                             <div class="col-12 col-md-6">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                    <input type="text" class="form-control" v-model="username" :placeholder="$root.t('username')">
+                                    <input type="text" class="form-control" v-model="username" :placeholder="t('username')">
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-key"></i></span>
-                                    <input :type="showPassword ? 'text' : 'password'" class="form-control" v-model="password" :placeholder="$root.t('password')">
+                                    <input :type="showPassword ? 'text' : 'password'" class="form-control" v-model="password" :placeholder="t('password')">
                                     <button class="btn btn-outline-secondary" type="button" @click="showPassword = !showPassword">
                                         <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
                                     </button>
@@ -197,21 +208,21 @@ const DatabaseConnectionForm = {
             <!-- 高级选项组 -->
             <div class="form-group mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-warning mb-0"><i class="bi bi-gear me-2"></i>{{ $root.t('advancedOptions') }}</h6>
+                    <h6 class="text-warning mb-0"><i class="bi bi-gear me-2"></i>{{ t('advancedOptions') }}</h6>
                     <button class="btn btn-sm btn-outline-secondary" @click="showAdvanced = !showAdvanced">
                         <i :class="showAdvanced ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
-                        {{ showAdvanced ? $root.t('collapse') : $root.t('expand') }}
+                        {{ showAdvanced ? t('collapse') : t('expand') }}
                     </button>
                 </div>
                 
                 <div v-if="showAdvanced" class="row">
                     <div class="col-12">
                         <div class="row mb-3">
-                            <label class="col-12 col-md-3 col-form-label">{{ $root.t('instanceName') }}</label>
+                            <label class="col-12 col-md-3 col-form-label">{{ t('instanceName') }}</label>
                             <div class="col-12 col-md-9">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-collection"></i></span>
-                                    <input type="text" class="form-control" v-model="instanceName" :placeholder="$root.t('sqlServerInstance')">
+                                    <input type="text" class="form-control" v-model="instanceName" :placeholder="t('sqlServerInstance')">
                                 </div>
                             </div>
                         </div>
@@ -221,7 +232,7 @@ const DatabaseConnectionForm = {
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" v-model="encrypt" :id="'encryptCheck' + side">
                                     <label class="form-check-label" :for="'encryptCheck' + side">
-                                        <i class="bi bi-lock-fill me-1"></i>{{ $root.t('encryptConnection') }}
+                                        <i class="bi bi-lock-fill me-1"></i>{{ t('encryptConnection') }}
                                     </label>
                                 </div>
                             </div>
@@ -235,7 +246,7 @@ const DatabaseConnectionForm = {
                 <div class="col-12 text-center">
                     <button class="btn btn-primary" @click="testConnection" :disabled="isTesting || !isValid">
                         <span v-if="isTesting" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        <i class="bi bi-wifi me-1"></i>{{ $root.t('testConnection') }}
+                        <i class="bi bi-wifi me-1"></i>{{ t('testConnection') }}
                     </button>
                 </div>
             </div>
@@ -250,23 +261,7 @@ const DatabaseConnectionForm = {
                 </div>
             </div>
         </div>
-    `,
-    data() {
-        return {
-            host: '',
-            username: '',
-            password: '',
-            database: '',
-            port: 1433,
-            instanceName: '',
-            encrypt: false,
-            timeout: 60, // 默认超时时间设置为60秒
-            testResult: null,
-            isTesting: false,
-            showPassword: false,
-            showAdvanced: false
-        };
-    }
+    `
 };
 
 // 比较范围选择器组件
@@ -292,7 +287,8 @@ const ComparisonScopeSelector = {
                 tableStructure: true,    // 表结构组: tables, fields
                 keysAndIndexes: true,    // 键和索引组: primaryKeys, foreignKeys, indexes, constraints
                 otherObjects: true       // 其他对象组: triggers, storedProcedures, databaseEncoding
-            }
+            },
+            languageKey: 0 // 用于强制重新渲染组件
         };
     },
     mounted() {
@@ -300,6 +296,12 @@ const ComparisonScopeSelector = {
         this.$nextTick(() => {
             this.updateScopeFromModel();
             this.$emit('update:modelValue', this.scope);
+        });
+        
+        // 监听语言变化事件
+        window.addEventListener('languageChanged', () => {
+            // 通过改变 languageKey 来强制重新渲染组件
+            this.languageKey++;
         });
     },
     watch: {
@@ -395,98 +397,112 @@ const ComparisonScopeSelector = {
                 .every(key => this.scope[key]);
             
             this.scope.all = allSelected;
+        },
+        
+        // 添加翻译方法
+        t(key) {
+            // 优先使用父组件的翻译方法
+            if (this.$parent && this.$parent.t) {
+                return this.$parent.t(key);
+            }
+            // 备用方案：使用全局i18n
+            if (window.i18n) {
+                return window.i18n.t(key);
+            }
+            // 最后的备用方案：返回key
+            return key;
         }
     },
     template: `
-        <div class="scope-selector">
+        <div class="scope-selector" :key="languageKey">
             <div class="scope-group">
                 <div class="scope-group-header">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" :checked="scope.all" @change="toggleAll" id="selectAll-scope">
-                        <label class="form-check-label" for="selectAll-scope">{{ $root.t('selectAll') }}</label>
+                        <label class="form-check-label" for="selectAll-scope">{{ t('selectAll') }}</label>
                     </div>
                 </div>
                 
                 <div class="scope-group">
                     <div class="scope-group-header d-flex justify-content-between align-items-center">
-                        <span>{{ $root.t('tableStructure') }}</span>
+                        <span>{{ t('tableStructure') }}</span>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" :checked="groupStates.tableStructure" @change="toggleGroup('tableStructure')" id="tableStructureCheck-scope">
-                            <label class="form-check-label" for="tableStructureCheck-scope">{{ $root.t('selectAll') }}</label>
+                            <label class="form-check-label" for="tableStructureCheck-scope">{{ t('selectAll') }}</label>
                         </div>
                     </div>
                     <div class="scope-item">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" :checked="scope.tables" @change="toggleItem('tables')" id="tablesCheck-scope">
-                            <label class="form-check-label" for="tablesCheck-scope">{{ $root.t('tables') }}</label>
+                            <label class="form-check-label" for="tablesCheck-scope">{{ t('tables') }}</label>
                         </div>
                     </div>
                     <div class="scope-item">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" :checked="scope.fields" @change="toggleItem('fields')" id="fieldsCheck-scope">
-                            <label class="form-check-label" for="fieldsCheck-scope">{{ $root.t('fields') }}</label>
+                            <label class="form-check-label" for="fieldsCheck-scope">{{ t('fields') }}</label>
                         </div>
                     </div>
                 </div>
                 
                 <div class="scope-group">
                     <div class="scope-group-header d-flex justify-content-between align-items-center">
-                        <span>{{ $root.t('keysAndIndexes') }}</span>
+                        <span>{{ t('keysAndIndexes') }}</span>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" :checked="groupStates.keysAndIndexes" @change="toggleGroup('keysAndIndexes')" id="keysAndIndexesCheck-scope">
-                            <label class="form-check-label" for="keysAndIndexesCheck-scope">{{ $root.t('selectAll') }}</label>
+                            <label class="form-check-label" for="keysAndIndexesCheck-scope">{{ t('selectAll') }}</label>
                         </div>
                     </div>
                     <div class="scope-item">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" :checked="scope.primaryKeys" @change="toggleItem('primaryKeys')" id="primaryKeysCheck-scope">
-                            <label class="form-check-label" for="primaryKeysCheck-scope">{{ $root.t('primaryKeys') }}</label>
+                            <label class="form-check-label" for="primaryKeysCheck-scope">{{ t('primaryKeys') }}</label>
                         </div>
                     </div>
                     <div class="scope-item">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" :checked="scope.foreignKeys" @change="toggleItem('foreignKeys')" id="foreignKeysCheck-scope">
-                            <label class="form-check-label" for="foreignKeysCheck-scope">{{ $root.t('foreignKeys') }}</label>
+                            <label class="form-check-label" for="foreignKeysCheck-scope">{{ t('foreignKeys') }}</label>
                         </div>
                     </div>
                     <div class="scope-item">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" :checked="scope.indexes" @change="toggleItem('indexes')" id="indexesCheck-scope">
-                            <label class="form-check-label" for="indexesCheck-scope">{{ $root.t('indexes') }}</label>
+                            <label class="form-check-label" for="indexesCheck-scope">{{ t('indexes') }}</label>
                         </div>
                     </div>
                     <div class="scope-item">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" :checked="scope.constraints" @change="toggleItem('constraints')" id="constraintsCheck-scope">
-                            <label class="form-check-label" for="constraintsCheck-scope">{{ $root.t('constraints') }}</label>
+                            <label class="form-check-label" for="constraintsCheck-scope">{{ t('constraints') }}</label>
                         </div>
                     </div>
                 </div>
                 
                 <div class="scope-group">
                     <div class="scope-group-header d-flex justify-content-between align-items-center">
-                        <span>{{ $root.t('otherObjects') }}</span>
+                        <span>{{ t('otherObjects') }}</span>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" :checked="groupStates.otherObjects" @change="toggleGroup('otherObjects')" id="otherObjectsCheck-scope">
-                            <label class="form-check-label" for="otherObjectsCheck-scope">{{ $root.t('selectAll') }}</label>
+                            <label class="form-check-label" for="otherObjectsCheck-scope">{{ t('selectAll') }}</label>
                         </div>
                     </div>
                     <div class="scope-item">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" :checked="scope.triggers" @change="toggleItem('triggers')" id="triggersCheck-scope">
-                            <label class="form-check-label" for="triggersCheck-scope">{{ $root.t('triggers') }}</label>
+                            <label class="form-check-label" for="triggersCheck-scope">{{ t('triggers') }}</label>
                         </div>
                     </div>
                     <div class="scope-item">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" :checked="scope.storedProcedures" @change="toggleItem('storedProcedures')" id="storedProceduresCheck-scope">
-                            <label class="form-check-label" for="storedProceduresCheck-scope">{{ $root.t('storedProcedures') }}</label>
+                            <label class="form-check-label" for="storedProceduresCheck-scope">{{ t('storedProcedures') }}</label>
                         </div>
                     </div>
                     <div class="scope-item">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" :checked="scope.databaseEncoding" @change="toggleItem('databaseEncoding')" id="databaseEncodingCheck-scope">
-                            <label class="form-check-label" for="databaseEncodingCheck-scope">{{ $root.t('databaseEncoding') }}</label>
+                            <label class="form-check-label" for="databaseEncodingCheck-scope">{{ t('databaseEncoding') }}</label>
                         </div>
                     </div>
                 </div>
@@ -501,8 +517,16 @@ const DatabaseComparisonResult = {
     data() {
         return {
             expandedTables: new Set(),
-            expandedObjects: new Map()
+            expandedObjects: new Map(),
+            languageKey: 0 // 用于强制重新渲染组件
         };
+    },
+    mounted() {
+        // 监听语言变化事件
+        window.addEventListener('languageChanged', () => {
+            // 通过改变 languageKey 来强制重新渲染组件
+            this.languageKey++;
+        });
     },
     methods: {
         toggleTable(tableKey) {
@@ -541,16 +565,30 @@ const DatabaseComparisonResult = {
                 case 'same': return 'diff-same';
                 default: return '';
             }
+        },
+        
+        // 添加翻译方法
+        t(key) {
+            // 优先使用父组件的翻译方法
+            if (this.$parent && this.$parent.t) {
+                return this.$parent.t(key);
+            }
+            // 备用方案：使用全局i18n
+            if (window.i18n) {
+                return window.i18n.t(key);
+            }
+            // 最后的备用方案：返回key
+            return key;
         }
     },
     template: `
-        <div class="comparison-result">
+        <div class="comparison-result" :key="languageKey">
             <!-- 数据库信息比较 -->
             <div v-if="comparisonScope.databaseEncoding && result.databaseInfo" class="mb-4">
-                <h6>{{ $root.t('databaseInfo') }}</h6>
+                <h6>{{ t('databaseInfo') }}</h6>
                 <div class="diff-layout">
                     <div class="diff-column diff-column-left">
-                        <div class="comparison-header">{{ $root.t('databaseA') }}</div>
+                        <div class="comparison-header">{{ t('databaseA') }}</div>
                         <div v-for="diff in result.databaseInfo.differences" :key="diff.field" class="mb-2 p-2" :class="getDiffClass('different')">
                             <strong>{{ diff.field }}:</strong> {{ diff.valueA }}
                         </div>
@@ -559,7 +597,7 @@ const DatabaseComparisonResult = {
                         </div>
                     </div>
                     <div class="diff-column">
-                        <div class="comparison-header">{{ $root.t('databaseB') }}</div>
+                        <div class="comparison-header">{{ t('databaseB') }}</div>
                         <div v-for="diff in result.databaseInfo.differences" :key="diff.field" class="mb-2 p-2" :class="getDiffClass('different')">
                             <strong>{{ diff.field }}:</strong> {{ diff.valueB }}
                         </div>
@@ -572,11 +610,11 @@ const DatabaseComparisonResult = {
             
             <!-- 表比较 -->
             <div v-if="result.tables && (comparisonScope.tables || comparisonScope.all)">
-                <h6>{{ $root.t('tableComparison') }}</h6>
+                <h6>{{ t('tableComparison') }}</h6>
                 
                 <!-- 只在数据库A中的表 -->
                 <div v-if="result.tables.onlyInA && result.tables.onlyInA.length > 0" class="mb-3">
-                    <h6 class="text-danger">{{ $root.t('onlyInA') }}</h6>
+                    <h6 class="text-danger">{{ t('onlyInA') }}</h6>
                     <div v-for="table in result.tables.onlyInA" :key="getTableKey(table)" class="mb-2 p-2" :class="getDiffClass('onlyInA')">
                         {{ table.schemaName }}.{{ table.tableName }}
                     </div>
@@ -584,7 +622,7 @@ const DatabaseComparisonResult = {
                 
                 <!-- 只在数据库B中的表 -->
                 <div v-if="result.tables.onlyInB && result.tables.onlyInB.length > 0" class="mb-3">
-                    <h6 class="text-primary">{{ $root.t('onlyInB') }}</h6>
+                    <h6 class="text-primary">{{ t('onlyInB') }}</h6>
                     <div v-for="table in result.tables.onlyInB" :key="getTableKey(table)" class="mb-2 p-2" :class="getDiffClass('onlyInB')">
                         {{ table.schemaName }}.{{ table.tableName }}
                     </div>
@@ -592,20 +630,20 @@ const DatabaseComparisonResult = {
                 
                 <!-- 两个数据库中都存在的表 -->
                 <div v-if="result.tables.inBoth && result.tables.inBoth.length > 0">
-                    <h6>{{ $root.t('inBoth') }}</h6>
+                    <h6>{{ t('inBoth') }}</h6>
                     <div v-for="table in result.tables.inBoth" :key="getTableKey(table)" class="table-comparison mb-3">
                         <div class="table-header d-flex justify-content-between align-items-center" :class="['expand-collapse-btn', getDiffClass(table.hasDifferences ? 'different' : 'same')]">
                             <div @click="toggleTable(getTableKey(table))" class="flex-grow-1">
                                 {{ table.schemaName }}.{{ table.tableName }}
                                 <span v-if="table.fieldCountInfo && table.fieldCountInfo.difference !== 0" class="badge bg-info ms-2">
-                                    {{ $root.t('fieldCountDifference').replace('{countA}', table.fieldCountInfo.countA).replace('{countB}', table.fieldCountInfo.countB).replace('{difference}', table.fieldCountInfo.difference > 0 ? '+' + table.fieldCountInfo.difference : table.fieldCountInfo.difference) }}
+                                    {{ t('fieldCountDifference').replace('{countA}', table.fieldCountInfo.countA).replace('{countB}', table.fieldCountInfo.countB).replace('{difference}', table.fieldCountInfo.difference > 0 ? '+' + table.fieldCountInfo.difference : table.fieldCountInfo.difference) }}
                                 </span>
-                                <span v-if="table.hasDifferences && (!table.fieldCountInfo || table.fieldCountInfo.difference === 0)" class="badge bg-warning ms-2">{{ $root.t('hasDifferences') }}</span>
+                                <span v-if="table.hasDifferences && (!table.fieldCountInfo || table.fieldCountInfo.difference === 0)" class="badge bg-warning ms-2">{{ t('hasDifferences') }}</span>
                                 <span class="float-end">{{ isTableExpanded(getTableKey(table)) ? '▼' : '▶' }}</span>
                             </div>
-                            <button class="btn btn-sm btn-outline-primary ms-2" @click.stop="$root.compareSingleTable(table.schemaName, table.tableName)" :disabled="$root.isComparing">
-                                <span v-if="$root.isComparing" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                {{ $root.t('recompareTable') }}
+                            <button class="btn btn-sm btn-outline-primary ms-2" @click.stop="$parent.compareSingleTable(table.schemaName, table.tableName)" :disabled="$parent.isComparing">
+                                <span v-if="$parent.isComparing" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                {{ t('recompareTable') }}
                             </button>
                         </div>
                         
@@ -614,13 +652,13 @@ const DatabaseComparisonResult = {
                             <div v-if="(comparisonScope.fields || comparisonScope.all) && table.columns">
                                 <div class="mb-3">
                                     <h6 @click="toggleObject(getTableKey(table), 'columns')" class="expand-collapse-btn">
-                                        {{ $root.t('columns') }} <span class="float-end">{{ isObjectExpanded(getTableKey(table), 'columns') ? '▼' : '▶' }}</span>
+                                        {{ t('columns') }} <span class="float-end">{{ isObjectExpanded(getTableKey(table), 'columns') ? '▼' : '▶' }}</span>
                                     </h6>
                                     
                                     <div v-if="isObjectExpanded(getTableKey(table), 'columns')">
                                         <!-- 只在数据库A中的列 -->
                                         <div v-if="table.columns.onlyInA && table.columns.onlyInA.length > 0" class="mb-2">
-                                            <div class="text-danger">{{ $root.t('onlyInA') }}</div>
+                                            <div class="text-danger">{{ t('onlyInA') }}</div>
                                             <div v-for="col in table.columns.onlyInA" :key="col.column_name" class="column-comparison" :class="getDiffClass('onlyInA')">
                                                 {{ col.column_name }} ({{ col.data_type }})
                                             </div>
@@ -628,7 +666,7 @@ const DatabaseComparisonResult = {
                                         
                                         <!-- 只在数据库B中的列 -->
                                         <div v-if="table.columns.onlyInB && table.columns.onlyInB.length > 0" class="mb-2">
-                                            <div class="text-primary">{{ $root.t('onlyInB') }}</div>
+                                            <div class="text-primary">{{ t('onlyInB') }}</div>
                                             <div v-for="col in table.columns.onlyInB" :key="col.column_name" class="column-comparison" :class="getDiffClass('onlyInB')">
                                                 {{ col.column_name }} ({{ col.data_type }})
                                             </div>
@@ -636,11 +674,11 @@ const DatabaseComparisonResult = {
                                         
                                         <!-- 两个数据库中都存在的列 -->
                                         <div v-if="table.columns.inBoth && table.columns.inBoth.length > 0">
-                                            <div>{{ $root.t('inBoth') }}</div>
+                                            <div>{{ t('inBoth') }}</div>
                                             <div v-for="col in table.columns.inBoth" :key="col.column_name" class="column-comparison" :class="getDiffClass(col.hasDifferences ? 'different' : 'same')">
                                                 <div @click="toggleObject(getTableKey(table) + '-columns', getObjectKey(col))" class="expand-collapse-btn">
                                                     {{ col.column_name }} ({{ col.data_type }})
-                                                    <span v-if="col.hasDifferences" class="badge bg-warning ms-2">{{ $root.t('hasDifferences') }}</span>
+                                                    <span v-if="col.hasDifferences" class="badge bg-warning ms-2">{{ t('hasDifferences') }}</span>
                                                     <span class="float-end">{{ isObjectExpanded(getTableKey(table) + '-columns', getObjectKey(col)) ? '▼' : '▶' }}</span>
                                                 </div>
                                                 
@@ -658,13 +696,13 @@ const DatabaseComparisonResult = {
                                                     <div class="mt-2 p-2 border-top">
                                                         <div class="row">
                                                             <div class="col-6">
-                                                                <h6 class="text-danger">{{ $root.t('columnDetailsA') }}</h6>
+                                                                <h6 class="text-danger">{{ t('columnDetailsA') }}</h6>
                                                                 <div v-for="(value, key) in col.detailsA" :key="'a-'+key" class="mb-1">
                                                                     <strong>{{ key }}:</strong> {{ value }}
                                                                 </div>
                                                             </div>
                                                             <div class="col-6">
-                                                                <h6 class="text-primary">{{ $root.t('columnDetailsB') }}</h6>
+                                                                <h6 class="text-primary">{{ t('columnDetailsB') }}</h6>
                                                                 <div v-for="(value, key) in col.detailsB" :key="'b-'+key" class="mb-1">
                                                                     <strong>{{ key }}:</strong> {{ value }}
                                                                 </div>
@@ -682,13 +720,13 @@ const DatabaseComparisonResult = {
                             <div v-if="(comparisonScope.primaryKeys || comparisonScope.all) && table.primaryKeys">
                                 <div class="mb-3">
                                     <h6 @click="toggleObject(getTableKey(table), 'primaryKeys')" class="expand-collapse-btn">
-                                        {{ $root.t('primaryKeys') }} <span class="float-end">{{ isObjectExpanded(getTableKey(table), 'primaryKeys') ? '▼' : '▶' }}</span>
+                                        {{ t('primaryKeys') }} <span class="float-end">{{ isObjectExpanded(getTableKey(table), 'primaryKeys') ? '▼' : '▶' }}</span>
                                     </h6>
                                     
                                     <div v-if="isObjectExpanded(getTableKey(table), 'primaryKeys')">
                                         <!-- 只在数据库A中的主键 -->
                                         <div v-if="table.primaryKeys.onlyInA && table.primaryKeys.onlyInA.length > 0" class="mb-2">
-                                            <div class="text-danger">{{ $root.t('onlyInA') }}</div>
+                                            <div class="text-danger">{{ t('onlyInA') }}</div>
                                             <div v-for="pk in table.primaryKeys.onlyInA" :key="pk.column_name" class="column-comparison" :class="getDiffClass('onlyInA')">
                                                 {{ pk.column_name }}
                                             </div>
@@ -696,7 +734,7 @@ const DatabaseComparisonResult = {
                                         
                                         <!-- 只在数据库B中的主键 -->
                                         <div v-if="table.primaryKeys.onlyInB && table.primaryKeys.onlyInB.length > 0" class="mb-2">
-                                            <div class="text-primary">{{ $root.t('onlyInB') }}</div>
+                                            <div class="text-primary">{{ t('onlyInB') }}</div>
                                             <div v-for="pk in table.primaryKeys.onlyInB" :key="pk.column_name" class="column-comparison" :class="getDiffClass('onlyInB')">
                                                 {{ pk.column_name }}
                                             </div>
@@ -704,11 +742,11 @@ const DatabaseComparisonResult = {
                                         
                                         <!-- 两个数据库中都存在的主键 -->
                                         <div v-if="table.primaryKeys.inBoth && table.primaryKeys.inBoth.length > 0">
-                                            <div>{{ $root.t('inBoth') }}</div>
+                                            <div>{{ t('inBoth') }}</div>
                                             <div v-for="pk in table.primaryKeys.inBoth" :key="pk.column_name" class="column-comparison" :class="getDiffClass(pk.hasDifferences ? 'different' : 'same')">
                                                 <div @click="toggleObject(getTableKey(table) + '-primaryKeys', getObjectKey(pk))" class="expand-collapse-btn">
                                                     {{ pk.column_name }}
-                                                    <span v-if="pk.hasDifferences" class="badge bg-warning ms-2">{{ $root.t('hasDifferences') }}</span>
+                                                    <span v-if="pk.hasDifferences" class="badge bg-warning ms-2">{{ t('hasDifferences') }}</span>
                                                     <span class="float-end">{{ isObjectExpanded(getTableKey(table) + '-primaryKeys', getObjectKey(pk)) ? '▼' : '▶' }}</span>
                                                 </div>
                                                 
@@ -724,13 +762,13 @@ const DatabaseComparisonResult = {
                                                     <div class="mt-2 p-2 border-top">
                                                         <div class="row">
                                                             <div class="col-6">
-                                                                <h6 class="text-danger">{{ $root.t('columnDetailsA') }}</h6>
+                                                                <h6 class="text-danger">{{ t('columnDetailsA') }}</h6>
                                                                 <div v-for="(value, key) in pk.detailsA" :key="'a-'+key" class="mb-1">
                                                                     <strong>{{ key }}:</strong> {{ value }}
                                                                 </div>
                                                             </div>
                                                             <div class="col-6">
-                                                                <h6 class="text-primary">{{ $root.t('columnDetailsB') }}</h6>
+                                                                <h6 class="text-primary">{{ t('columnDetailsB') }}</h6>
                                                                 <div v-for="(value, key) in pk.detailsB" :key="'b-'+key" class="mb-1">
                                                                     <strong>{{ key }}:</strong> {{ value }}
                                                                 </div>
@@ -748,13 +786,13 @@ const DatabaseComparisonResult = {
                             <div v-if="(comparisonScope.foreignKeys || comparisonScope.all) && table.foreignKeys">
                                 <div class="mb-3">
                                     <h6 @click="toggleObject(getTableKey(table), 'foreignKeys')" class="expand-collapse-btn">
-                                        {{ $root.t('foreignKeys') }} <span class="float-end">{{ isObjectExpanded(getTableKey(table), 'foreignKeys') ? '▼' : '▶' }}</span>
+                                        {{ t('foreignKeys') }} <span class="float-end">{{ isObjectExpanded(getTableKey(table), 'foreignKeys') ? '▼' : '▶' }}</span>
                                     </h6>
                                     
                                     <div v-if="isObjectExpanded(getTableKey(table), 'foreignKeys')">
                                         <!-- 只在数据库A中的外键 -->
                                         <div v-if="table.foreignKeys.onlyInA && table.foreignKeys.onlyInA.length > 0" class="mb-2">
-                                            <div class="text-danger">{{ $root.t('onlyInA') }}</div>
+                                            <div class="text-danger">{{ t('onlyInA') }}</div>
                                             <div v-for="fk in table.foreignKeys.onlyInA" :key="fk.constraint_name" class="column-comparison" :class="getDiffClass('onlyInA')">
                                                 {{ fk.constraint_name }}
                                             </div>
@@ -762,7 +800,7 @@ const DatabaseComparisonResult = {
                                         
                                         <!-- 只在数据库B中的外键 -->
                                         <div v-if="table.foreignKeys.onlyInB && table.foreignKeys.onlyInB.length > 0" class="mb-2">
-                                            <div class="text-primary">{{ $root.t('onlyInB') }}</div>
+                                            <div class="text-primary">{{ t('onlyInB') }}</div>
                                             <div v-for="fk in table.foreignKeys.onlyInB" :key="fk.constraint_name" class="column-comparison" :class="getDiffClass('onlyInB')">
                                                 {{ fk.constraint_name }}
                                             </div>
@@ -770,11 +808,11 @@ const DatabaseComparisonResult = {
                                         
                                         <!-- 两个数据库中都存在的外键 -->
                                         <div v-if="table.foreignKeys.inBoth && table.foreignKeys.inBoth.length > 0">
-                                            <div>{{ $root.t('inBoth') }}</div>
+                                            <div>{{ t('inBoth') }}</div>
                                             <div v-for="fk in table.foreignKeys.inBoth" :key="fk.constraint_name" class="column-comparison" :class="getDiffClass(fk.hasDifferences ? 'different' : 'same')">
                                                 <div @click="toggleObject(getTableKey(table) + '-foreignKeys', getObjectKey(fk))" class="expand-collapse-btn">
                                                     {{ fk.constraint_name }}
-                                                    <span v-if="fk.hasDifferences" class="badge bg-warning ms-2">{{ $root.t('hasDifferences') }}</span>
+                                                    <span v-if="fk.hasDifferences" class="badge bg-warning ms-2">{{ t('hasDifferences') }}</span>
                                                     <span class="float-end">{{ isObjectExpanded(getTableKey(table) + '-foreignKeys', getObjectKey(fk)) ? '▼' : '▶' }}</span>
                                                 </div>
                                                 
@@ -790,13 +828,13 @@ const DatabaseComparisonResult = {
                                                     <div class="mt-2 p-2 border-top">
                                                         <div class="row">
                                                             <div class="col-6">
-                                                                <h6 class="text-danger">{{ $root.t('columnDetailsA') }}</h6>
+                                                                <h6 class="text-danger">{{ t('columnDetailsA') }}</h6>
                                                                 <div v-for="(value, key) in fk.detailsA" :key="'a-'+key" class="mb-1">
                                                                     <strong>{{ key }}:</strong> {{ value }}
                                                                 </div>
                                                             </div>
                                                             <div class="col-6">
-                                                                <h6 class="text-primary">{{ $root.t('columnDetailsB') }}</h6>
+                                                                <h6 class="text-primary">{{ t('columnDetailsB') }}</h6>
                                                                 <div v-for="(value, key) in fk.detailsB" :key="'b-'+key" class="mb-1">
                                                                     <strong>{{ key }}:</strong> {{ value }}
                                                                 </div>
@@ -814,13 +852,13 @@ const DatabaseComparisonResult = {
                             <div v-if="(comparisonScope.indexes || comparisonScope.all) && table.indexes">
                                 <div class="mb-3">
                                     <h6 @click="toggleObject(getTableKey(table), 'indexes')" class="expand-collapse-btn">
-                                        {{ $root.t('indexes') }} <span class="float-end">{{ isObjectExpanded(getTableKey(table), 'indexes') ? '▼' : '▶' }}</span>
+                                        {{ t('indexes') }} <span class="float-end">{{ isObjectExpanded(getTableKey(table), 'indexes') ? '▼' : '▶' }}</span>
                                     </h6>
                                     
                                     <div v-if="isObjectExpanded(getTableKey(table), 'indexes')">
                                         <!-- 只在数据库A中的索引 -->
                                         <div v-if="table.indexes.onlyInA && table.indexes.onlyInA.length > 0" class="mb-2">
-                                            <div class="text-danger">{{ $root.t('onlyInA') }}</div>
+                                            <div class="text-danger">{{ t('onlyInA') }}</div>
                                             <div v-for="idx in table.indexes.onlyInA" :key="idx.index_name" class="column-comparison" :class="getDiffClass('onlyInA')">
                                                 {{ idx.index_name }}
                                             </div>
@@ -828,7 +866,7 @@ const DatabaseComparisonResult = {
                                         
                                         <!-- 只在数据库B中的索引 -->
                                         <div v-if="table.indexes.onlyInB && table.indexes.onlyInB.length > 0" class="mb-2">
-                                            <div class="text-primary">{{ $root.t('onlyInB') }}</div>
+                                            <div class="text-primary">{{ t('onlyInB') }}</div>
                                             <div v-for="idx in table.indexes.onlyInB" :key="idx.index_name" class="column-comparison" :class="getDiffClass('onlyInB')">
                                                 {{ idx.index_name }}
                                             </div>
@@ -836,11 +874,11 @@ const DatabaseComparisonResult = {
                                         
                                         <!-- 两个数据库中都存在的索引 -->
                                         <div v-if="table.indexes.inBoth && table.indexes.inBoth.length > 0">
-                                            <div>{{ $root.t('inBoth') }}</div>
+                                            <div>{{ t('inBoth') }}</div>
                                             <div v-for="idx in table.indexes.inBoth" :key="idx.index_name" class="column-comparison" :class="getDiffClass(idx.hasDifferences ? 'different' : 'same')">
                                                 <div @click="toggleObject(getTableKey(table) + '-indexes', getObjectKey(idx))" class="expand-collapse-btn">
                                                     {{ idx.index_name }}
-                                                    <span v-if="idx.hasDifferences" class="badge bg-warning ms-2">{{ $root.t('hasDifferences') }}</span>
+                                                    <span v-if="idx.hasDifferences" class="badge bg-warning ms-2">{{ t('hasDifferences') }}</span>
                                                     <span class="float-end">{{ isObjectExpanded(getTableKey(table) + '-indexes', getObjectKey(idx)) ? '▼' : '▶' }}</span>
                                                 </div>
                                                 
@@ -856,13 +894,13 @@ const DatabaseComparisonResult = {
                                                     <div class="mt-2 p-2 border-top">
                                                         <div class="row">
                                                             <div class="col-6">
-                                                                <h6 class="text-danger">{{ $root.t('columnDetailsA') }}</h6>
+                                                                <h6 class="text-danger">{{ t('columnDetailsA') }}</h6>
                                                                 <div v-for="(value, key) in idx.detailsA" :key="'a-'+key" class="mb-1">
                                                                     <strong>{{ key }}:</strong> {{ value }}
                                                                 </div>
                                                             </div>
                                                             <div class="col-6">
-                                                                <h6 class="text-primary">{{ $root.t('columnDetailsB') }}</h6>
+                                                                <h6 class="text-primary">{{ t('columnDetailsB') }}</h6>
                                                                 <div v-for="(value, key) in idx.detailsB" :key="'b-'+key" class="mb-1">
                                                                     <strong>{{ key }}:</strong> {{ value }}
                                                                 </div>
@@ -880,13 +918,13 @@ const DatabaseComparisonResult = {
                             <div v-if="(comparisonScope.constraints || comparisonScope.all) && table.constraints">
                                 <div class="mb-3">
                                     <h6 @click="toggleObject(getTableKey(table), 'constraints')" class="expand-collapse-btn">
-                                        {{ $root.t('constraints') }} <span class="float-end">{{ isObjectExpanded(getTableKey(table), 'constraints') ? '▼' : '▶' }}</span>
+                                        {{ t('constraints') }} <span class="float-end">{{ isObjectExpanded(getTableKey(table), 'constraints') ? '▼' : '▶' }}</span>
                                     </h6>
                                     
                                     <div v-if="isObjectExpanded(getTableKey(table), 'constraints')">
                                         <!-- 只在数据库A中的约束 -->
                                         <div v-if="table.constraints.onlyInA && table.constraints.onlyInA.length > 0" class="mb-2">
-                                            <div class="text-danger">{{ $root.t('onlyInA') }}</div>
+                                            <div class="text-danger">{{ t('onlyInA') }}</div>
                                             <div v-for="con in table.constraints.onlyInA" :key="con.constraint_name" class="column-comparison" :class="getDiffClass('onlyInA')">
                                                 {{ con.constraint_name }}
                                             </div>
@@ -894,7 +932,7 @@ const DatabaseComparisonResult = {
                                         
                                         <!-- 只在数据库B中的约束 -->
                                         <div v-if="table.constraints.onlyInB && table.constraints.onlyInB.length > 0" class="mb-2">
-                                            <div class="text-primary">{{ $root.t('onlyInB') }}</div>
+                                            <div class="text-primary">{{ t('onlyInB') }}</div>
                                             <div v-for="con in table.constraints.onlyInB" :key="con.constraint_name" class="column-comparison" :class="getDiffClass('onlyInB')">
                                                 {{ con.constraint_name }}
                                             </div>
@@ -902,11 +940,11 @@ const DatabaseComparisonResult = {
                                         
                                         <!-- 两个数据库中都存在的约束 -->
                                         <div v-if="table.constraints.inBoth && table.constraints.inBoth.length > 0">
-                                            <div>{{ $root.t('inBoth') }}</div>
+                                            <div>{{ t('inBoth') }}</div>
                                             <div v-for="con in table.constraints.inBoth" :key="con.constraint_name" class="column-comparison" :class="getDiffClass(con.hasDifferences ? 'different' : 'same')">
                                                 <div @click="toggleObject(getTableKey(table) + '-constraints', getObjectKey(con))" class="expand-collapse-btn">
                                                     {{ con.constraint_name }}
-                                                    <span v-if="con.hasDifferences" class="badge bg-warning ms-2">{{ $root.t('hasDifferences') }}</span>
+                                                    <span v-if="con.hasDifferences" class="badge bg-warning ms-2">{{ t('hasDifferences') }}</span>
                                                     <span class="float-end">{{ isObjectExpanded(getTableKey(table) + '-constraints', getObjectKey(con)) ? '▼' : '▶' }}</span>
                                                 </div>
                                                 
@@ -922,13 +960,13 @@ const DatabaseComparisonResult = {
                                                     <div class="mt-2 p-2 border-top">
                                                         <div class="row">
                                                             <div class="col-6">
-                                                                <h6 class="text-danger">{{ $root.t('columnDetailsA') }}</h6>
+                                                                <h6 class="text-danger">{{ t('columnDetailsA') }}</h6>
                                                                 <div v-for="(value, key) in con.detailsA" :key="'a-'+key" class="mb-1">
                                                                     <strong>{{ key }}:</strong> {{ value }}
                                                                 </div>
                                                             </div>
                                                             <div class="col-6">
-                                                                <h6 class="text-primary">{{ $root.t('columnDetailsB') }}</h6>
+                                                                <h6 class="text-primary">{{ t('columnDetailsB') }}</h6>
                                                                 <div v-for="(value, key) in con.detailsB" :key="'b-'+key" class="mb-1">
                                                                     <strong>{{ key }}:</strong> {{ value }}
                                                                 </div>
@@ -946,13 +984,13 @@ const DatabaseComparisonResult = {
                             <div v-if="(comparisonScope.triggers || comparisonScope.all) && table.triggers">
                                 <div class="mb-3">
                                     <h6 @click="toggleObject(getTableKey(table), 'triggers')" class="expand-collapse-btn">
-                                        {{ $root.t('triggers') }} <span class="float-end">{{ isObjectExpanded(getTableKey(table), 'triggers') ? '▼' : '▶' }}</span>
+                                        {{ t('triggers') }} <span class="float-end">{{ isObjectExpanded(getTableKey(table), 'triggers') ? '▼' : '▶' }}</span>
                                     </h6>
                                     
                                     <div v-if="isObjectExpanded(getTableKey(table), 'triggers')">
                                         <!-- 只在数据库A中的触发器 -->
                                         <div v-if="table.triggers.onlyInA && table.triggers.onlyInA.length > 0" class="mb-2">
-                                            <div class="text-danger">{{ $root.t('onlyInA') }}</div>
+                                            <div class="text-danger">{{ t('onlyInA') }}</div>
                                             <div v-for="trig in table.triggers.onlyInA" :key="trig.trigger_name" class="column-comparison" :class="getDiffClass('onlyInA')">
                                                 {{ trig.trigger_name }}
                                             </div>
@@ -960,7 +998,7 @@ const DatabaseComparisonResult = {
                                         
                                         <!-- 只在数据库B中的触发器 -->
                                         <div v-if="table.triggers.onlyInB && table.triggers.onlyInB.length > 0" class="mb-2">
-                                            <div class="text-primary">{{ $root.t('onlyInB') }}</div>
+                                            <div class="text-primary">{{ t('onlyInB') }}</div>
                                             <div v-for="trig in table.triggers.onlyInB" :key="trig.trigger_name" class="column-comparison" :class="getDiffClass('onlyInB')">
                                                 {{ trig.trigger_name }}
                                             </div>
@@ -968,11 +1006,11 @@ const DatabaseComparisonResult = {
                                         
                                         <!-- 两个数据库中都存在的触发器 -->
                                         <div v-if="table.triggers.inBoth && table.triggers.inBoth.length > 0">
-                                            <div>{{ $root.t('inBoth') }}</div>
+                                            <div>{{ t('inBoth') }}</div>
                                             <div v-for="trig in table.triggers.inBoth" :key="trig.trigger_name" class="column-comparison" :class="getDiffClass(trig.hasDifferences ? 'different' : 'same')">
                                                 <div @click="toggleObject(getTableKey(table) + '-triggers', getObjectKey(trig))" class="expand-collapse-btn">
                                                     {{ trig.trigger_name }}
-                                                    <span v-if="trig.hasDifferences" class="badge bg-warning ms-2">{{ $root.t('hasDifferences') }}</span>
+                                                    <span v-if="trig.hasDifferences" class="badge bg-warning ms-2">{{ t('hasDifferences') }}</span>
                                                     <span class="float-end">{{ isObjectExpanded(getTableKey(table) + '-triggers', getObjectKey(trig)) ? '▼' : '▶' }}</span>
                                                 </div>
                                                 
@@ -988,13 +1026,13 @@ const DatabaseComparisonResult = {
                                                     <div class="mt-2 p-2 border-top">
                                                         <div class="row">
                                                             <div class="col-6">
-                                                                <h6 class="text-danger">{{ $root.t('columnDetailsA') }}</h6>
+                                                                <h6 class="text-danger">{{ t('columnDetailsA') }}</h6>
                                                                 <div v-for="(value, key) in trig.detailsA" :key="'a-'+key" class="mb-1">
                                                                     <strong>{{ key }}:</strong> {{ value }}
                                                                 </div>
                                                             </div>
                                                             <div class="col-6">
-                                                                <h6 class="text-primary">{{ $root.t('columnDetailsB') }}</h6>
+                                                                <h6 class="text-primary">{{ t('columnDetailsB') }}</h6>
                                                                 <div v-for="(value, key) in trig.detailsB" :key="'b-'+key" class="mb-1">
                                                                     <strong>{{ key }}:</strong> {{ value }}
                                                                 </div>
@@ -1014,11 +1052,11 @@ const DatabaseComparisonResult = {
             
             <!-- 存储过程比较 -->
             <div v-if="result.storedProcedures && (comparisonScope.storedProcedures || comparisonScope.all)">
-                <h6>{{ $root.t('storedProcedures') }}</h6>
+                <h6>{{ t('storedProcedures') }}</h6>
                 
                 <!-- 只在数据库A中的存储过程 -->
                 <div v-if="result.storedProcedures.onlyInA && result.storedProcedures.onlyInA.length > 0" class="mb-3">
-                    <h6 class="text-danger">{{ $root.t('onlyInA') }}</h6>
+                    <h6 class="text-danger">{{ t('onlyInA') }}</h6>
                     <div v-for="proc in result.storedProcedures.onlyInA" :key="proc.procedure_name" class="mb-2 p-2" :class="getDiffClass('onlyInA')">
                         {{ proc.procedure_name }}
                     </div>
@@ -1026,7 +1064,7 @@ const DatabaseComparisonResult = {
                 
                 <!-- 只在数据库B中的存储过程 -->
                 <div v-if="result.storedProcedures.onlyInB && result.storedProcedures.onlyInB.length > 0" class="mb-3">
-                    <h6 class="text-primary">{{ $root.t('onlyInB') }}</h6>
+                    <h6 class="text-primary">{{ t('onlyInB') }}</h6>
                     <div v-for="proc in result.storedProcedures.onlyInB" :key="proc.procedure_name" class="mb-2 p-2" :class="getDiffClass('onlyInB')">
                         {{ proc.procedure_name }}
                     </div>
@@ -1034,11 +1072,11 @@ const DatabaseComparisonResult = {
                 
                 <!-- 两个数据库中都存在的存储过程 -->
                 <div v-if="result.storedProcedures.inBoth && result.storedProcedures.inBoth.length > 0">
-                    <h6>{{ $root.t('inBoth') }}</h6>
+                    <h6>{{ t('inBoth') }}</h6>
                     <div v-for="proc in result.storedProcedures.inBoth" :key="proc.procedure_name" class="mb-3 p-2" :class="getDiffClass(proc.hasDifferences ? 'different' : 'same')">
                         <div @click="toggleObject('storedProcedures', getObjectKey(proc))" class="expand-collapse-btn">
                             {{ proc.procedure_name }}
-                            <span v-if="proc.hasDifferences" class="badge bg-warning ms-2">{{ $root.t('hasDifferences') }}</span>
+                            <span v-if="proc.hasDifferences" class="badge bg-warning ms-2">{{ t('hasDifferences') }}</span>
                             <span class="float-end">{{ isObjectExpanded('storedProcedures', getObjectKey(proc)) ? '▼' : '▶' }}</span>
                         </div>
                         
@@ -1054,13 +1092,13 @@ const DatabaseComparisonResult = {
                             <div class="mt-2 p-2 border-top">
                                 <div class="row">
                                     <div class="col-6">
-                                        <h6 class="text-danger">{{ $root.t('columnDetailsA') }}</h6>
+                                        <h6 class="text-danger">{{ t('columnDetailsA') }}</h6>
                                         <div v-for="(value, key) in proc.detailsA" :key="'a-'+key" class="mb-1">
                                             <strong>{{ key }}:</strong> {{ value }}
                                         </div>
                                     </div>
                                     <div class="col-6">
-                                        <h6 class="text-primary">{{ $root.t('columnDetailsB') }}</h6>
+                                        <h6 class="text-primary">{{ t('columnDetailsB') }}</h6>
                                         <div v-for="(value, key) in proc.detailsB" :key="'b-'+key" class="mb-1">
                                             <strong>{{ key }}:</strong> {{ value }}
                                         </div>
@@ -1110,7 +1148,9 @@ const app = createApp({
             errorMessage: '',
             successMessage: '',
             errorToast: null,
-            successToast: null
+            successToast: null,
+            // 添加请求取消令牌以防止内存泄漏
+            abortController: null
         };
     },
     computed: {
@@ -1139,6 +1179,16 @@ const app = createApp({
         this.languageState.currentLanguage = window.i18n.getCurrentLanguage();
     },
     methods: {
+        // 处理子组件发出的错误事件
+        handleError(message) {
+            this.showError(message);
+        },
+        
+        // 处理子组件发出的成功事件
+        handleSuccess(message) {
+            this.showSuccess(message);
+        },
+        
         onConnectionChange(data) {
             if (data.side === 'A') {
                 this.dbAConfig = data.config;
@@ -1147,25 +1197,34 @@ const app = createApp({
             }
             
             // 检查两个连接是否都有效
-            this.connectionsValid = this.dbAConfig && this.dbBConfig && 
-                                  this.dbAConfig.host && this.dbAConfig.username && 
+            this.connectionsValid = this.dbAConfig && this.dbBConfig &&
+                                  this.dbAConfig.host && this.dbAConfig.username &&
                                   this.dbAConfig.password && this.dbAConfig.database &&
-                                  this.dbBConfig.host && this.dbBConfig.username && 
+                                  this.dbBConfig.host && this.dbBConfig.username &&
                                   this.dbBConfig.password && this.dbBConfig.database;
         },
         
+        // 取消所有进行中的请求
+        cancelPendingRequests() {
+            if (this.abortController) {
+                this.abortController.abort();
+                this.abortController = null;
+            }
+        },
+        
         async testConnections() {
+            // 取消之前的请求
+            this.cancelPendingRequests();
+            this.abortController = new AbortController();
+            
             this.isTesting = true;
             try {
                 console.log('测试数据库连接 A:', this.dbAConfig);
                 console.log('测试数据库连接 B:', this.dbBConfig);
                 
-                console.log('dbAConfig:', this.dbAConfig);
-                console.log('dbBConfig:', this.dbBConfig);
-                
                 // 检查数据库配置是否完整
                 if (!this.dbAConfig || !this.dbBConfig) {
-                    this.showError(this.$root.t('errorConfigNotExists'));
+                    this.showError(this.t('errorConfigNotExists'));
                     return;
                 }
                 
@@ -1175,12 +1234,12 @@ const app = createApp({
                 const missingFieldsB = requiredFields.filter(field => !this.dbBConfig[field]);
                 
                 if (missingFieldsA.length > 0 || missingFieldsB.length > 0) {
-                    let errorMsg = this.$root.t('incompleteConfig') + '：';
+                    let errorMsg = this.t('incompleteConfig') + '：';
                     if (missingFieldsA.length > 0) {
-                        errorMsg += `${this.$root.t('dbAMissingFields')} ${missingFieldsA.join(', ')}. `;
+                        errorMsg += `${this.t('dbAMissingFields')} ${missingFieldsA.join(', ')}. `;
                     }
                     if (missingFieldsB.length > 0) {
-                        errorMsg += `${this.$root.t('dbBMissingFields')} ${missingFieldsB.join(', ')}. `;
+                        errorMsg += `${this.t('dbBMissingFields')} ${missingFieldsB.join(', ')}. `;
                     }
                     this.showError(errorMsg);
                     return;
@@ -1192,13 +1251,19 @@ const app = createApp({
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(this.dbAConfig)
+                    body: JSON.stringify(this.dbAConfig),
+                    signal: this.abortController.signal
                 });
+                
+                // 检查请求是否被取消
+                if (this.abortController.signal.aborted) {
+                    return;
+                }
                 
                 const resultA = await responseA.json();
                 console.log('数据库A测试结果:', resultA);
                 if (!resultA.success) {
-                    this.showError(`${this.$root.t('dbAConnectionFailed')}: ${resultA.message}`);
+                    this.showError(`${this.t('dbAConnectionFailed')}: ${resultA.message}`);
                     return;
                 }
                 
@@ -1208,27 +1273,42 @@ const app = createApp({
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(this.dbBConfig)
+                    body: JSON.stringify(this.dbBConfig),
+                    signal: this.abortController.signal
                 });
+                
+                // 检查请求是否被取消
+                if (this.abortController.signal.aborted) {
+                    return;
+                }
                 
                 const resultB = await responseB.json();
                 console.log('数据库B测试结果:', resultB);
                 if (!resultB.success) {
-                    this.showError(`${this.$root.t('dbBConnectionFailed')}: ${resultB.message}`);
+                    this.showError(`${this.t('dbBConnectionFailed')}: ${resultB.message}`);
                     return;
                 }
                 
-                this.showSuccess(this.$root.t('bothConnectionsSuccess'));
+                this.showSuccess(this.t('bothConnectionsSuccess'));
                 this.showComparisonScope = true;
             } catch (error) {
+                if (error.name === 'AbortError') {
+                    console.log('请求被取消');
+                    return;
+                }
                 console.error('连接测试错误:', error);
                 this.showError(`连接测试失败: ${error.message}`);
             } finally {
                 this.isTesting = false;
+                this.abortController = null;
             }
         },
         
         async compareDatabases() {
+            // 取消之前的请求
+            this.cancelPendingRequests();
+            this.abortController = new AbortController();
+            
             this.isComparing = true;
             try {
                 const response = await fetch('/api/compare-databases', {
@@ -1240,25 +1320,40 @@ const app = createApp({
                         dbAConfig: this.dbAConfig,
                         dbBConfig: this.dbBConfig,
                         comparisonScope: this.comparisonScope
-                    })
+                    }),
+                    signal: this.abortController.signal
                 });
+                
+                // 检查请求是否被取消
+                if (this.abortController.signal.aborted) {
+                    return;
+                }
                 
                 const result = await response.json();
                 if (result.success) {
                     this.comparisonResult = result.comparisonResult;
                     this.showComparisonResult = true;
-                    this.showSuccess(this.$root.t('comparisonComplete'));
+                    this.showSuccess(this.t('comparisonComplete'));
                 } else {
-                    this.showError(`${this.$root.t('comparisonFailed')}: ${result.message}`);
+                    this.showError(`${this.t('comparisonFailed')}: ${result.message}`);
                 }
             } catch (error) {
-                this.showError(`${this.$root.t('comparisonFailed')}: ${error.message}`);
+                if (error.name === 'AbortError') {
+                    console.log('请求被取消');
+                    return;
+                }
+                this.showError(`${this.t('comparisonFailed')}: ${error.message}`);
             } finally {
                 this.isComparing = false;
+                this.abortController = null;
             }
         },
 
         async compareSingleTable(schemaName, tableName) {
+            // 取消之前的请求
+            this.cancelPendingRequests();
+            this.abortController = new AbortController();
+            
             this.isComparing = true;
             try {
                 const response = await fetch('/api/compare-single-table', {
@@ -1272,8 +1367,14 @@ const app = createApp({
                         schemaName: schemaName,
                         tableName: tableName,
                         comparisonScope: this.comparisonScope
-                    })
+                    }),
+                    signal: this.abortController.signal
                 });
+                
+                // 检查请求是否被取消
+                if (this.abortController.signal.aborted) {
+                    return;
+                }
                 
                 const result = await response.json();
                 if (result.success) {
@@ -1286,16 +1387,21 @@ const app = createApp({
                         if (tableIndex !== -1) {
                             // 更新表比较结果
                             this.comparisonResult.tables.inBoth[tableIndex] = result.comparisonResult.table;
-                            this.showSuccess(this.$root.t('tableComparisonComplete').replace('{table}', `${schemaName}.${tableName}`));
+                            this.showSuccess(this.t('tableComparisonComplete').replace('{table}', `${schemaName}.${tableName}`));
                         }
                     }
                 } else {
-                    this.showError(`${this.$root.t('tableComparisonFailed')}: ${result.message}`);
+                    this.showError(`${this.t('tableComparisonFailed')}: ${result.message}`);
                 }
             } catch (error) {
-                this.showError(`${this.$root.t('tableComparisonFailed')}: ${error.message}`);
+                if (error.name === 'AbortError') {
+                    console.log('请求被取消');
+                    return;
+                }
+                this.showError(`${this.t('tableComparisonFailed')}: ${error.message}`);
             } finally {
                 this.isComparing = false;
+                this.abortController = null;
             }
         },
         
@@ -1372,6 +1478,11 @@ const app = createApp({
         // 获取翻译文本的辅助方法
         t(key) {
             return this.languageState ? this.languageState.t(key) : (window.i18n ? window.i18n.t(key) : key);
+        },
+        
+        // 添加组件销毁时的清理工作
+        beforeUnmount() {
+            this.cancelPendingRequests();
         }
     }
 });

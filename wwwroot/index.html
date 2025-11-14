@@ -47,12 +47,12 @@
                             <!-- 数据库A连接 -->
                             <div class="col-md-6">
                                 <h6 class="border-bottom pb-2">{{ t('databaseA') }}</h6>
-                                <database-connection-form side="A" @connection-change="onConnectionChange"></database-connection-form>
+                                <database-connection-form side="A" @connection-change="onConnectionChange" @show-error="handleError" @show-success="handleSuccess"></database-connection-form>
                             </div>
                             <!-- 数据库B连接 -->
                             <div class="col-md-6">
                                 <h6 class="border-bottom pb-2">{{ t('databaseB') }}</h6>
-                                <database-connection-form side="B" @connection-change="onConnectionChange"></database-connection-form>
+                                <database-connection-form side="B" @connection-change="onConnectionChange" @show-error="handleError" @show-success="handleSuccess"></database-connection-form>
                             </div>
                         </div>
                         <div class="row mt-3">
