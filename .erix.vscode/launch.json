@@ -32,7 +32,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "postDebugTask": "Open Browser"
+            "postDebugTask": "Open Browser to http://localhost:10298"
         }
     ]
 }

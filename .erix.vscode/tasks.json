@@ -5,7 +5,10 @@
             "label": "Start Backend Server",
             "type": "shell",
             "command": "npm",
-            "args": ["run", "dev"],
+            "args": [
+                "run",
+                "dev"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}/backend"
             },
@@ -23,7 +26,10 @@
             },
             "problemMatcher": {
                 "owner": "node",
-                "fileLocation": ["relative", "${workspaceFolder}/backend"],
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/backend"
+                ],
                 "pattern": {
                     "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
                     "file": 1,
@@ -38,7 +44,9 @@
             "label": "Start Backend Server (Production)",
             "type": "shell",
             "command": "npm",
-            "args": ["start"],
+            "args": [
+                "start"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}/backend"
             },
@@ -53,7 +61,10 @@
             },
             "problemMatcher": {
                 "owner": "node",
-                "fileLocation": ["relative", "${workspaceFolder}/backend"],
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/backend"
+                ],
                 "pattern": {
                     "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
                     "file": 1,
@@ -68,7 +79,9 @@
             "label": "Install Backend Dependencies",
             "type": "shell",
             "command": "npm",
-            "args": ["install"],
+            "args": [
+                "install"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}/backend"
             },
@@ -84,7 +97,11 @@
             "label": "Stop Backend Server",
             "type": "shell",
             "command": "taskkill",
-            "args": ["/F", "/IM", "node.exe"],
+            "args": [
+                "/F",
+                "/IM",
+                "node.exe"
+            ],
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -98,7 +115,10 @@
             "label": "Start with Docker",
             "type": "shell",
             "command": "docker-compose",
-            "args": ["up", "--build"],
+            "args": [
+                "up",
+                "--build"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -111,7 +131,10 @@
             },
             "problemMatcher": {
                 "owner": "docker",
-                "fileLocation": ["relative", "${workspaceFolder}"],
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
                 "pattern": {
                     "regexp": "^(.*):(\\d+):\\s+(warning|error):\\s+(.*)$",
                     "file": 1,
@@ -125,7 +148,9 @@
             "label": "Stop Docker",
             "type": "shell",
             "command": "docker-compose",
-            "args": ["down"],
+            "args": [
+                "down"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -142,7 +167,25 @@
             "label": "Open Browser",
             "type": "shell",
             "command": "start",
-            "args": ["http://localhost:3000"],
+            "args": [
+                "http://localhost:3000"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Open Browser to http://localhost:10298",
+            "type": "shell",
+            "command": "start",
+            "args": [
+                "http://localhost:10298"
+            ],
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -156,7 +199,10 @@
             "label": "Debug Database Connection",
             "type": "shell",
             "command": "node",
-            "args": ["--inspect-brk", "database.js"],
+            "args": [
+                "--inspect-brk",
+                "database.js"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}/backend"
             },
@@ -169,7 +215,10 @@
             },
             "problemMatcher": {
                 "owner": "node",
-                "fileLocation": ["relative", "${workspaceFolder}/backend"],
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/backend"
+                ],
                 "pattern": {
                     "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
                     "file": 1,
@@ -184,7 +233,9 @@
             "label": "Run Tests",
             "type": "shell",
             "command": "npm",
-            "args": ["test"],
+            "args": [
+                "test"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}/backend"
             },
@@ -197,7 +248,10 @@
             },
             "problemMatcher": {
                 "owner": "node",
-                "fileLocation": ["relative", "${workspaceFolder}/backend"],
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/backend"
+                ],
                 "pattern": {
                     "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
                     "file": 1,
