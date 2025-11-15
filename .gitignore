@@ -4,5 +4,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# npm configuration
+.npmrc
+
 # Visual Studio Code
 .vscode/
