@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Backend with Debug",
+            "name": "Debug Backend",
             "type": "node",
             "request": "launch",
             "program": "${workspaceFolder}/backend/server.js",
@@ -19,32 +19,7 @@
             ]
         },
         {
-            "name": "Attach to Backend",
-            "type": "node",
-            "request": "attach",
-            "port": 9229,
-            "restart": true,
-            "skipFiles": [
-                "<node_internals>/**"
-            ]
-        },
-        {
-            "name": "Launch Backend (Node.js)",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceFolder}/backend/server.js",
-            "cwd": "${workspaceFolder}/backend",
-            "env": {
-                "NODE_ENV": "development"
-            },
-            "console": "integratedTerminal",
-            "outputCapture": "std",
-            "skipFiles": [
-                "<node_internals>/**"
-            ]
-        },
-        {
-            "name": "Launch Frontend with Debug",
+            "name": "Debug Frontend",
             "type": "node",
             "request": "launch",
             "program": "${workspaceFolder}/backend/server.js",
@@ -58,46 +33,6 @@
                 "<node_internals>/**"
             ],
             "postDebugTask": "Open Browser"
-        },
-        {
-            "name": "Debug Database Connection",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceFolder}/backend/database.js",
-            "cwd": "${workspaceFolder}/backend",
-            "env": {
-                "NODE_ENV": "development"
-            },
-            "console": "integratedTerminal",
-            "outputCapture": "std",
-            "skipFiles": [
-                "<node_internals>/**"
-            ]
-        },
-        {
-            "name": "Debug Comparator",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceFolder}/backend/comparator.js",
-            "cwd": "${workspaceFolder}/backend",
-            "env": {
-                "NODE_ENV": "development"
-            },
-            "console": "integratedTerminal",
-            "outputCapture": "std",
-            "skipFiles": [
-                "<node_internals>/**"
-            ]
-        }
-    ],
-    "compounds": [
-        {
-            "name": "Launch Full Stack Debug",
-            "configurations": [
-                "Launch Backend with Debug",
-                "Launch Frontend with Debug"
-            ],
-            "preLaunchTask": "Install Backend Dependencies"
         }
     ]
 }
