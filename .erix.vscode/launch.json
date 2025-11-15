@@ -93,7 +93,10 @@
     "compounds": [
         {
             "name": "Launch Full Stack Debug",
-            "configurations": ["Launch Backend with Debug"],
+            "configurations": [
+                "Launch Backend with Debug",
+                "Launch Frontend with Debug"
+            ],
             "preLaunchTask": "Install Backend Dependencies"
         }
     ]
